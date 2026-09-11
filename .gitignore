@@ -1,0 +1,7 @@
+/target/
+.DS_Store
+
+# Local environment overrides
+.env
+.env.*
+!.env.example

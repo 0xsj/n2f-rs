@@ -1,0 +1,85 @@
+{
+  "repository": "n2f-rs",
+  "scope": "hand-selected errors mutations after consistency refactor",
+  "baseline_build_passed": true,
+  "baseline_passed": true,
+  "build_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "errors_spec",
+    "--no-run"
+  ],
+  "test_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "errors_spec"
+  ],
+  "source_hashes": {
+    "Cargo.toml": "44d71edba36acd0a22320b57fa6d0879ef1de0fbbf8e642bd39878e467a90d29",
+    "Cargo.lock": "1fa46bf9687fe2ccc95bf9452d7cbd34904a0e084747abdb322b821f82109b1c",
+    "tests/errors_spec.rs": "0311320497838a103efe908af406d9384203053787649dcef6dbbb1922ecd4b6",
+    "examples/errors.rs": "6b6d2d943ed683a0ba74824dfc7661d37335507e3c89ed50325ad930d7b08afe",
+    "src/lib.rs": "aaeec53b1671dabaf1c086494dabdea18d057f419580bc8b8e0285046bae51bc",
+    "src/domains/mod.rs": "b7d8773eeeb89fa0bb597f4a516c9f9cdaffa02b96a47775209857af7de1d4fd",
+    "src/shared/mod.rs": "436ec3c96fa001b5c8c6d87ad8de0c438a12258449add9ab020a4d41120df9c8",
+    "src/root/mod.rs": "b250b0f6a67fa22aa33935715e2b7b78618cdc976dd40153b79f60de1873bf7e",
+    "src/shared/errors/classification.rs": "4e814038dd997f380d988b797752d702970aa38c4558246fa2d31454223803e0",
+    "src/shared/errors/CONTRACT.md": "0b4c9ef94e2767282ec3f244b3452436d44d36a5f134a495c66cdf0b1d2afe7f",
+    "src/shared/errors/public.rs": "6b135fbb4569b8ada40e03d12da1ca5e64ae275154f06c6bbe92c8554423ff77",
+    "src/shared/errors/kind.rs": "273e98820bd5b938854a8b10798f2a9122cc2766fbbb88c7a0bae03548cafbc7",
+    "src/shared/errors/README.md": "4d293a04d5279891ce4b87717ed07dda51a65aa94037152366a5655305c06c20",
+    "src/shared/errors/mod.rs": "64ba5e3d3198d9030d8636d471b441a8587faf0f11067b858b65dbbf2e20eb43",
+    "src/shared/errors/failure.rs": "ac3ff8756e3d5fd1014710ccf524490f47f3ba487a2560d4e26ba7fad0d4ee5c",
+    "src/shared/errors/context.rs": "942804d6fb7ee6ca5486ba79de78f8846540339a9f2b3231f5bc19d443029667"
+  },
+  "results": [
+    {
+      "mutant": "expose_internal_projection",
+      "file": "src/shared/errors/public.rs",
+      "before": "Some(view) if view.kind != Kind::Internal => PublicInfo {",
+      "after": "Some(view) => PublicInfo {",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "e04_public_projection"
+      ],
+      "copy_restored": true
+    },
+    {
+      "mutant": "lose_context_classification",
+      "file": "src/shared/errors/context.rs",
+      "before": "self.inner.classification()",
+      "after": "None",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "e06_annotation_keeps_typed_case_and_source",
+        "e10_merge_and_source_replacement",
+        "e08_classified_timeouts_and_cancellation_survive_context"
+      ],
+      "copy_restored": true
+    },
+    {
+      "mutant": "replace_instead_of_merge_fields",
+      "file": "src/shared/errors/failure.rs",
+      "before": "self.fields.extend(values);",
+      "after": "self.fields = values;",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "e10_merge_and_source_replacement"
+      ],
+      "copy_restored": true
+    }
+  ],
+  "restored_baseline_passed": true,
+  "workspace_unchanged": true,
+  "copy_restored": true
+}

@@ -1,0 +1,84 @@
+{
+  "language": "n2f-rs",
+  "scope": "hand-selected clock/id faults and the Rust boxed-source extension",
+  "build_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--no-run"
+  ],
+  "test_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked"
+  ],
+  "baseline_build_passed": true,
+  "baseline_passed": true,
+  "results": [
+    {
+      "module": "clock",
+      "mutant": "wall_set_resets_elapsed",
+      "file": "src/shared/clock/fake.rs",
+      "before": "self.state.lock().expect(\"clock state poisoned\").wall = wall;",
+      "after": "let mut state = self.state.lock().expect(\"clock state poisoned\");\n state.wall = wall;\n state.elapsed = Duration::ZERO;",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "c03_wall_correction"
+      ]
+    },
+    {
+      "module": "clock",
+      "mutant": "advance_loses_elapsed",
+      "file": "src/shared/clock/fake.rs",
+      "before": "state.elapsed = elapsed;",
+      "after": "state.elapsed = Duration::ZERO;",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "c02_advance",
+        "c03_wall_correction",
+        "c04_refusal_is_atomic",
+        "c06_shared_fake"
+      ]
+    }
+  ],
+  "source_hashes": {
+    "Cargo.toml": "a15d196b483d684144e5973a25d65953fe115a8ae2b2802cfe27ec0597361051",
+    "Cargo.lock": "8ad63e964b0ae5acfbf41e4412596c6c250e8a623175ddc1921081207b9c7d4d",
+    "tests/errors_spec.rs": "83a77ec2e43dbe170e338c2731d60400efd6af569933985d230fe2f668eb6437",
+    "tests/clock_spec.rs": "7a32b6a6698fde46bbd8f5bec8e45533ba6a5ee7ddb188f4cc2c0925da6e1c7d",
+    "tests/id_spec.rs": "9d128959ff95f676d12b5e03d63b1224c4ef0261811ae529ea8aecf456921167",
+    "examples/time_and_ids.rs": "538106a264fe67d47ded1541a97fa4d7f15f5eccc7df9f9eb09b43f6b4642e55",
+    "examples/errors.rs": "6b6d2d943ed683a0ba74824dfc7661d37335507e3c89ed50325ad930d7b08afe",
+    "src/lib.rs": "aaeec53b1671dabaf1c086494dabdea18d057f419580bc8b8e0285046bae51bc",
+    "src/domains/mod.rs": "b7d8773eeeb89fa0bb597f4a516c9f9cdaffa02b96a47775209857af7de1d4fd",
+    "src/shared/mod.rs": "f983f0427bddb44e3d59659a1db3f0d09a84ba0a394e94882a528d32adaff606",
+    "src/root/mod.rs": "b250b0f6a67fa22aa33935715e2b7b78618cdc976dd40153b79f60de1873bf7e",
+    "src/shared/id/sequence.rs": "fde31f2e5baebcaa8e32d5137a9ce21c6cf41d54401129ac7f9ec2075510eb9c",
+    "src/shared/id/CONTRACT.md": "290f8c10053d2ed4beb75fd521cbc0a4e9e7462380c6015ea753e7e766186ce6",
+    "src/shared/id/mod.rs": "74f2a32242e4bf1bbf063a11f4c4ef3beeb1c84a8e35ab929ee0c6dff701ad77",
+    "src/shared/id/v7.rs": "3d44848b25ce41726c6a45b5368bec78fc00ab8c2b58c75183c8e14b4ceddb84",
+    "src/shared/id/value.rs": "a36a574b1927aaefd847fe33f33a4f682586297a1c53b8fe7d99149c40baa242",
+    "src/shared/errors/classification.rs": "4e814038dd997f380d988b797752d702970aa38c4558246fa2d31454223803e0",
+    "src/shared/errors/CONTRACT.md": "a8d7f818722321cffe84ed3bdf79ca267d8d7f0dc9595218a40fc420a8d1f265",
+    "src/shared/errors/public.rs": "6b135fbb4569b8ada40e03d12da1ca5e64ae275154f06c6bbe92c8554423ff77",
+    "src/shared/errors/kind.rs": "273e98820bd5b938854a8b10798f2a9122cc2766fbbb88c7a0bae03548cafbc7",
+    "src/shared/errors/README.md": "6a5833e8edbfc1a09e123b65fd1a8a355081a18408dc64f99bb86bb9f35f9acf",
+    "src/shared/errors/mod.rs": "30ee2dbeabfb876adf486517f92b2612c3da4d8bd02278da4dacc22ef52b9c26",
+    "src/shared/errors/failure.rs": "f5b05ed8bdd86bdff27d364557260fe380ac1545d96d22f976cf0b89fadeb36c",
+    "src/shared/errors/context.rs": "942804d6fb7ee6ca5486ba79de78f8846540339a9f2b3231f5bc19d443029667",
+    "src/shared/clock/fake.rs": "da9f7fd65f65713cbc360398bdc04381bef19972a52a3b16b67825274c0287e3",
+    "src/shared/clock/CONTRACT.md": "0bb9cafff31e2293ea466c628f1b1670ddf3fcd95bd430a1400e80f1a0162051",
+    "src/shared/clock/system.rs": "af71a8467e868705f64a3dab4778ab8ebee3ca67e89f589acff019a8bacc5416",
+    "src/shared/clock/mod.rs": "9790e02c5fb35ddfd27baa7a207d115edeff55529b6dbd82917e360f0076187d"
+  },
+  "restored_baseline_passed": true,
+  "workspace_unchanged": true,
+  "copy_restored": true,
+  "module": "clock"
+}

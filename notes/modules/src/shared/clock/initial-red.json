@@ -1,0 +1,11 @@
+{
+  "language": "n2f-rs",
+  "module": "clock",
+  "result": {
+    "chunk_id": "26310f",
+    "wall_time_seconds": 0.228809875,
+    "exit_code": 101,
+    "original_token_count": 370,
+    "output": "   Compiling n2f-rs v0.1.0 (/Users/sj/Desktop/dev/builds/blueprints/n2f-rs)\nerror[E0432]: unresolved imports `n2f_rs::shared::clock::FakeClock`, `n2f_rs::shared::clock::SystemClock`\n --> tests/clock_spec.rs:2:29\n  |\n2 | use n2f_rs::shared::clock::{FakeClock, SystemClock};\n  |                             ^^^^^^^^^  ^^^^^^^^^^^ no `SystemClock` in `shared::clock`\n  |                             |\n  |                             no `FakeClock` in `shared::clock`\n\nerror[E0282]: type annotations needed for `Arc<_, _>`\n  --> tests/clock_spec.rs:35:84\n   |\n35 | .....20).map(|_|{let c=Arc::clone(&c);thread::spawn(move||{for _ in 0..100 {c.advance(Duration::from_millis(1)).unwrap();let _=c.now();le...\n   |                      ^                                                        ------- type must be known at this point\n   |\nhelp: consider giving `c` an explicit type, where the type for type parameter `T` is specified\n   |\n35 |  let c=Arc::new(FakeClock::new(UNIX_EPOCH));let workers:Vec<_>=(0..20).map(|_|{let c: Arc<T, A>=Arc::clone(&c);thread::spawn(move||{for _ in 0..100 {c.advance(Duration::from_millis(1)).unwrap();let _=c.now();let _=c.elapsed();}})}).collect();\n   |                                                                                     +++++++++++\n\nSome errors have detailed explanations: E0282, E0432.\nFor more information about an error, try `rustc --explain E0282`.\nerror: could not compile `n2f-rs` (test \"clock_spec\") due to 2 previous errors\n"
+  }
+}

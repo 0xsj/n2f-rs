@@ -1,0 +1,9 @@
+[package]
+name = "n2f-rs"
+version = "0.1.0"
+edition = "2024"
+description = "The Rust backend blueprint in the nine to five family"
+publish = false
+
+[dependencies]
+getrandom = "0.4.1"
