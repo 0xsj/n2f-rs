@@ -1,0 +1,14 @@
+{
+  "note": "Captured initial tool result. Output may be truncated as marked; this is not a full raw command log.",
+  "result": {
+    "status": "fulfilled",
+    "value": {
+      "chunk_id": "aedec3",
+      "wall_time_seconds": 0.0745665,
+      "exit_code": 101,
+      "original_token_count": 102,
+      "output": "   Compiling n2f-rs v0.1.0 (/Users/sj/Desktop/dev/builds/blueprints/n2f-rs)\nerror[E0432]: unresolved import `n2f_rs::root::run`\n --> tests/foundations_spec.rs:1:14\n  |\n1 | use n2f_rs::{root::run,shared::env};\n  |              ^^^^^^^^^ no `run` in `root`\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `n2f-rs` (test \"foundations_spec\") due to 1 previous error\n"
+    }
+  }
+}
+

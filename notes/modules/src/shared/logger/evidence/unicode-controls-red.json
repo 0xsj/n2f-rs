@@ -1,0 +1,11 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "chunk_id": "68fb43",
+    "wall_time_seconds": 0.912433292,
+    "exit_code": 101,
+    "original_token_count": 214,
+    "output": "   Compiling n2f-rs v0.1.0 (/Users/sj/Desktop/dev/builds/blueprints/n2f-rs)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.61s\n     Running tests/logger_controls.rs (/private/tmp/n2f-errors-rs-spec/debug/deps/logger_controls-647b750e9f3935df)\n\nrunning 1 test\ntest l06_unicode_controls_cannot_split_console_records ... FAILED\n\nfailures:\n\n---- l06_unicode_controls_cannot_split_console_records stdout ----\n\nthread 'l06_unicode_controls_cannot_split_console_records' panicked at tests/logger_controls.rs:4:577:\nraw control '\\u{7f}'\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    l06_unicode_controls_cannot_split_console_records\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `--test logger_controls`\n"
+  }
+}
+

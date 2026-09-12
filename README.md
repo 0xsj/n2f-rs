@@ -2,18 +2,30 @@
 
 The Rust member of **nine to five**: independently usable backend blueprints with familiar ownership, composition, and documentation practices across stacks.
 
-The starting point is a single library crate. It establishes module locations and architectural intent. Local PostgreSQL, Redis, Mailpit, S3 and observability are available through Compose. There is no executable server, web framework, persistence adapter, or business workflow yet.
+## Current state
 
-The first leaf foundation is [shared/errors](src/shared/errors/mod.rs): shared
-classification and public projection, owned failure data and typed context.
-Its [contract](src/shared/errors/CONTRACT.md) names the implemented scenarios;
-[integration tests](tests/errors_spec.rs) exercise the public Rust API.
+Errors, clock, UUIDs, secrets, env parsing, provenance and logging are implemented
+with local contracts and executable tests. The composition root owns typed config,
+service identity and bounded output delivery. The [foundations command](FOUNDATIONS.md)
+exercises them together through console, JSON and no-op adapters.
 
-The next foundations are [clock](src/shared/clock/README.md) and
-[id](src/shared/id/README.md): system/manual clocks, validated UUID values,
-controlled UUIDv7 generation and finite test sequences. The only direct crate
-dependency is getrandom 0.4 for the ID module's OS entropy adapter. Cargo.lock pins
-the resolution. `--offline` works after the locked dependencies have been cached.
+The logger uses tracing 0.1.44, tracing-subscriber 0.3.23 and serde_json 1.0.149
+inside its adapter; UUID entropy uses getrandom 0.4.1.
+Validation/pagination, PostgreSQL transactions and migrations, readiness, outbound
+HTTP, WebSockets and a transactional outbox with a replaceable publisher are now
+implemented. [JetStream](JETSTREAM.md) is also implemented and verified as a second
+publisher, with a durable handoff into the PostgreSQL mailbox. See [the infrastructure guide](INFRASTRUCTURE_BUILD.md) for contracts,
+commands and limits. [Identity principal leaves](src/domains/identity/domain/CONTRACT.md) now implement
+registration values, restoration and versioned suspend/activate transitions.
+[Domain ownership and order](DOMAINS.md) describe the next application/persistence,
+audit and org slices. [Built-in authentication](AUTHENTICATION.md) is now specified
+as required baseline scope, with credential/session/challenge contracts, a logical
+schema and native API map. No persisted identity workflow or login is implemented yet.
+
+The [telemetry into HTTP slice](TELEMETRY_HTTP.md) now runs a diagnostic server:
+provenance admission, safe problem responses, isolated request context, completion
+logs and OTLP traces/metrics/logs. The guide includes settings and verification.
+
 
 ## Work locally
 
@@ -47,15 +59,16 @@ docker compose up -d --wait
 See [INFRASTRUCTURE.md](INFRASTRUCTURE.md) for ports, optional environment overrides,
 data lifecycle, and selected events/WebSocket direction.
 [OBSERVABILITY.md](OBSERVABILITY.md) contains the synthetic telemetry example and
-shared instrumentation expectations. Application adapters are not connected yet.
+shared instrumentation expectations. The diagnostic HTTP adapter exports all three
+signals; see [its run guide](TELEMETRY_HTTP.md).
 
 ## Find things
 
 | Location | Responsibility |
 | --- | --- |
 | `src/lib.rs` | Library entry point and module declarations |
-| `src/root/` | Future composition, process lifecycle, and cross-domain coordination |
-| `src/domains/` | Future business modules with their own rules and adapters |
+| `src/root/` | Foundations composition and process lifecycle; future cross-domain coordination |
+| `src/domains/` | Business modules, starting with identity principal leaves |
 | `src/shared/` | Shared foundations with a concrete consumer and named responsibility |
 | `notes/` | Discoveries, experiments, and transferable learning |
 | `decisions/` | Consequential choices and their alternatives |
@@ -73,3 +86,10 @@ python3 tools/mutations/foundations.py
 The runner builds and tests isolated temporary copies, retaining logs and hashes.
 Its selected mutations probe clock/ID contracts; they are not an exhaustive score.
 See the [notes index](notes/README.md) for language walkthroughs and recorded evidence.
+
+## Process verification
+
+`python3 tools/verify_foundations.py` builds the real executable and verifies eleven
+process scenarios, including terminal color and safe invalid-config exit.
+`python3 tools/mutations/process.py` probes selected secret/env/provenance/logger/root
+faults in isolated copies. These are targeted checks, not exhaustive guarantees.

@@ -1,0 +1,75 @@
+{
+  "language": "n2f-rs",
+  "results": [
+    {
+      "module": "logger",
+      "mutant": "exclusive_floor",
+      "file": "src/shared/logger/runtime.rs",
+      "before": "level < c.level",
+      "after": "level <= c.level",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "noop_emits",
+      "file": "src/shared/logger/runtime.rs",
+      "before": "config.format == \"none\",",
+      "after": "false,",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "ignores_no_color",
+      "file": "src/shared/logger/config.rs",
+      "before": "terminal && !no_color",
+      "after": "terminal",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "l06_color_and_controls"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "queue_exceeds_capacity",
+      "file": "src/shared/logger/delivery.rs",
+      "before": "mpsc::sync_channel::<Vec<u8>>(capacity)",
+      "after": "mpsc::sync_channel::<Vec<u8>>(capacity + 1)",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "l08_queue_and_deadline"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "cause_presence_inverted",
+      "file": "src/shared/logger/projection.rs",
+      "before": "error.source().is_some()",
+      "after": "error.source().is_none()",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "l04_l05_safe_projections"
+      ]
+    }
+  ],
+  "baseline_build_passed": true,
+  "baseline_passed": true,
+  "restored_baseline_passed": true,
+  "workspace_unchanged_at_run": true,
+  "copy_restored": true
+}

@@ -1,0 +1,150 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/n2f_rs-c05029f0875acb35)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/foundations.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/foundations-e40140b59cea8161)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/clock_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/clock_spec-78cb6618797e0daa)
+
+running 6 tests
+test c02_advance ... ok
+test c01_initial_and_stable ... ok
+test c04_refusal_is_atomic ... ok
+test c05_system ... ok
+test c03_wall_correction ... ok
+test c06_shared_fake ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/env_os_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/env_os_spec-6f3ce1b04aee2b58)
+
+running 1 test
+test v01_os_capture_matches_child_environment ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/env_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/env_spec-bbd3b68ea55ad76d)
+
+running 6 tests
+test v03_definitions ... ok
+test v01_presence ... ok
+test v04_failures ... ok
+test v06_duplicate ... ok
+test v05_manifest ... ok
+test v02_parsers ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/errors_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/errors_spec-f2f5142e592baafd)
+
+running 11 tests
+test e01_vocabulary ... ok
+test e03_success_and_unknown_are_different ... ok
+test e02_construction ... ok
+test e06_annotation_keeps_typed_case_and_source ... ok
+test e08_classified_timeouts_and_cancellation_survive_context ... ok
+test e07_translation_owns_projection_and_keeps_source ... ok
+test e05_metadata_ownership ... ok
+test e09_operation_owned_aggregate_requires_explicit_summary ... ok
+test e04_public_projection ... ok
+test e10_merge_and_source_replacement ... ok
+test e11_boxed_source_preserves_concrete_diagnostic ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/foundations_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/foundations_spec-b8c72d87d4caf2e5)
+
+running 2 tests
+test f01_f04_invalid_before_boot ... ok
+test f02_f03_modes_and_identities ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/id_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/id_spec-f5a026947db3f45c)
+
+running 9 tests
+test i02_value_and_time ... ok
+test i04_ordering_and_rollback ... ok
+test i07_time_range ... ok
+test i06_entropy_failure_atomicity ... ok
+test i01_parse ... ok
+test i08_sequence ... ok
+test i03_exact_v7_bytes ... ok
+test i05_exhaustion_and_recovery ... ok
+test i09_system_and_shared_generator ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/logger_boundary.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/logger_boundary-8684432a0ba0688d)
+
+running 2 tests
+test l07_flush_failure ... ok
+test l09_maximum_time_and_invalid_float ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/logger_controls.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/logger_controls-647b750e9f3935df)
+
+running 1 test
+test l06_unicode_controls_cannot_split_console_records ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/logger_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/logger_spec-d8aa884574678542)
+
+running 7 tests
+test l07_sink_failure ... ok
+test l09_invalid_config_time_size_closed ... ok
+test l03_l10_owned_fields_and_secret ... ok
+test l01_l02_filtering_and_noop ... ok
+test l06_color_and_controls ... ok
+test l04_l05_safe_projections ... ok
+test l08_queue_and_deadline ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/provenance_collision.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/provenance_collision-2f5a6610bbbe8c08)
+
+running 1 test
+test p23_explicit_cause_cannot_hide_execution_collision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/provenance_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/provenance_spec-c4a731c84389aa5c)
+
+running 8 tests
+test p10_p11_bounds_and_wall ... ok
+test p13_links ... ok
+test p01_p02_attribution ... ok
+test p12_p23_failure_effects ... ok
+test p14_replay ... ok
+test p03_p04_p05_p06_p07_p08_p09_transitions ... ok
+test p18_p19_snapshots ... ok
+test p15_p16_p17_incoming ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/secret_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/secret_spec-e49c4fbd8b1facce)
+
+running 3 tests
+test s08_s09_owned_value_and_absence ... ok
+test s04_s05_s06_nested_debug_and_display ... ok
+test s01_s02_s03_s07_presentation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests n2f_rs
+
+running 2 tests
+test src/shared/secret/value.rs - shared::secret::value::SecretString (line 5) - compile fail ... ok
+test src/shared/secret/value.rs - shared::secret::value::SecretString (line 10) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

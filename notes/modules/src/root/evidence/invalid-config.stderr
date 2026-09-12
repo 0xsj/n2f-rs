@@ -1,0 +1,1 @@
+configuration refused: {"DEMO_TOKEN":"required","LOG_CAPACITY":"out_of_range","LOG_LEVEL":"invalid_choice"}

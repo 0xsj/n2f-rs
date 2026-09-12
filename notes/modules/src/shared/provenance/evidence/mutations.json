@@ -1,0 +1,62 @@
+{
+  "language": "n2f-rs",
+  "results": [
+    {
+      "module": "provenance",
+      "mutant": "retry_skips_ordinal",
+      "file": "src/shared/provenance/factory.rs",
+      "before": ".attempt\n            .checked_add(1)",
+      "after": ".attempt\n            .checked_add(0)",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "child_loses_depth",
+      "file": "src/shared/provenance/factory.rs",
+      "before": "d.checked_add(1)",
+      "after": "d.checked_add(0)",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "cause_without_correlation",
+      "file": "src/shared/provenance/incoming.rs",
+      "before": "Ok(_) if i.correlation.is_none()",
+      "after": "Ok(_) if false",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "p15_p16_p17_incoming"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "collision_guard_removed",
+      "file": "src/shared/provenance/factory.rs",
+      "before": "if forbidden.contains(&scope_id) {",
+      "after": "if forbidden.contains(&scope_id) && false {",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "p23_explicit_cause_cannot_hide_execution_collision"
+      ]
+    }
+  ],
+  "baseline_build_passed": true,
+  "baseline_passed": true,
+  "restored_baseline_passed": true,
+  "workspace_unchanged_at_run": true,
+  "copy_restored": true
+}

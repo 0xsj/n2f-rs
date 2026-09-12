@@ -1,0 +1,35 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-identity-mutations-z1aaj32d/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.44s
+     Running tests/identity_domain_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_domain_spec-96e551e3f6127106)
+
+running 4 tests
+test registration_and_owned_snapshot ... ok
+test strict_name_and_time ... ok
+test restore_preserves_history ... FAILED
+test versioned_immutable_lifecycle ... FAILED
+
+failures:
+
+---- restore_preserves_history stdout ----
+
+thread 'restore_preserves_history' panicked at tests/identity_domain_spec.rs:98:5:
+assertion `left == right` failed
+  left: Snapshot { id: Id([0, 0, 0, 0, 0, 0, 64, 0, 128, 0, 0, 0, 0, 0, 0, 1]), kind: Human, display_name: "Ada", status: Suspended, created_at_ms: 1000, updated_at_ms: 2000, version: 1 }
+ right: Snapshot { id: Id([0, 0, 0, 0, 0, 0, 64, 0, 128, 0, 0, 0, 0, 0, 0, 1]), kind: Human, display_name: "Ada", status: Suspended, created_at_ms: 1000, updated_at_ms: 2000, version: 8 }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- versioned_immutable_lifecycle stdout ----
+
+thread 'versioned_immutable_lifecycle' panicked at tests/identity_domain_spec.rs:85:5:
+assertion `left == right` failed
+  left: "identity.version_conflict"
+ right: "identity.version_exhausted"
+
+
+failures:
+    restore_preserves_history
+    versioned_immutable_lifecycle
+
+test result: FAILED. 2 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test identity_domain_spec`

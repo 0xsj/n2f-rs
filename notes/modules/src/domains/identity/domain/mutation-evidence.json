@@ -1,0 +1,42 @@
+{
+  "language": "rs",
+  "caught": 4,
+  "selected": 4,
+  "exhaustive": false,
+  "evidence": ".",
+  "cases": [
+    {
+      "name": "stale_version",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "5b7e127e051fa32f804e6cddd5e6325527351a3207a0e327bc255d0e1a3b880d"
+    },
+    {
+      "name": "same_state",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "5b7e127e051fa32f804e6cddd5e6325527351a3207a0e327bc255d0e1a3b880d"
+    },
+    {
+      "name": "version_increment",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "5b7e127e051fa32f804e6cddd5e6325527351a3207a0e327bc255d0e1a3b880d"
+    },
+    {
+      "name": "restore_history",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "5b7e127e051fa32f804e6cddd5e6325527351a3207a0e327bc255d0e1a3b880d"
+    }
+  ],
+  "verified_on": "2026-09-12",
+  "logs": [
+    "baseline.log",
+    "restore_history.log",
+    "restored.log",
+    "same_state.log",
+    "stale_version.log",
+    "version_increment.log"
+  ]
+}

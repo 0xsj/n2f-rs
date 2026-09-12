@@ -1,5 +1,8 @@
-//! Composition and process ownership.
-//!
-//! Concrete adapters, application operations, and transports will be wired here
-//! when the first workflow needs them. Process startup and shutdown also belong
-//! here once an executable exists. Other layers must not depend on this module.
+//! Foundations configuration, composition and process lifecycle.
+//! Shared and product modules must not import this boundary.
+pub mod config;
+mod demo;
+pub mod events;
+pub mod http;
+mod logging;
+pub use demo::run;

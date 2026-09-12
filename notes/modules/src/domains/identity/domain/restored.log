@@ -1,0 +1,12 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-identity-mutations-z1aaj32d/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.40s
+     Running tests/identity_domain_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_domain_spec-96e551e3f6127106)
+
+running 4 tests
+test restore_preserves_history ... ok
+test versioned_immutable_lifecycle ... ok
+test registration_and_owned_snapshot ... ok
+test strict_name_and_time ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

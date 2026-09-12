@@ -1,0 +1,300 @@
+{
+  "language": "n2f-rs",
+  "scope": "hand-selected secret/env/provenance/logger/root faults",
+  "build_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--no-run"
+  ],
+  "test_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked"
+  ],
+  "baseline_build_passed": true,
+  "baseline_passed": true,
+  "results": [
+    {
+      "module": "secret",
+      "mutant": "display_discloses",
+      "file": "src/shared/secret/value.rs",
+      "before": "impl fmt::Display for SecretString {\n    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n        f.write_str(\"[REDACTED]\")\n    }\n}\n",
+      "after": "impl fmt::Display for SecretString {\n    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n        f.write_str(&self.value)\n    }\n}\n",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "s01_s02_s03_s07_presentation"
+      ]
+    },
+    {
+      "module": "secret",
+      "mutant": "debug_discloses",
+      "file": "src/shared/secret/value.rs",
+      "before": "impl fmt::Debug for SecretString {\n    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n        f.write_str(\"[REDACTED]\")\n    }\n}\n",
+      "after": "impl fmt::Debug for SecretString {\n    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {\n        f.write_str(&self.value)\n    }\n}\n",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "s04_s05_s06_nested_debug_and_display",
+        "s01_s02_s03_s07_presentation"
+      ]
+    },
+    {
+      "module": "env",
+      "mutant": "empty_becomes_absent",
+      "file": "src/shared/env/reader.rs",
+      "before": "    pub fn string(&mut self, k: &str, fallback: &str) -> String {\n        let Ok(raw) = self.read(k) else {\n            return String::new();\n        };\n        let p = raw.is_some();\n        let v = raw.unwrap_or_else(|| fallback.into());\n        self.record(k, &v, p, false);\n        v\n    }\n",
+      "after": "    pub fn string(&mut self, k: &str, fallback: &str) -> String {\n        let Ok(raw) = self.read(k) else {\n            return String::new();\n        };\n        let p = raw.is_some();\n        let v = raw.filter(|v| !v.is_empty()).unwrap_or_else(|| fallback.into());\n        self.record(k, &v, p, false);\n        v\n    }\n",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "v01_presence"
+      ]
+    },
+    {
+      "module": "env",
+      "mutant": "manifest_discloses",
+      "file": "src/shared/env/reader.rs",
+      "before": "value: if s { \"[REDACTED]\" } else { v }.into()",
+      "after": "value: v.into()",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "v05_manifest"
+      ]
+    },
+    {
+      "module": "env",
+      "mutant": "false_becomes_true",
+      "file": "src/shared/env/reader.rs",
+      "before": "Some(\"false\") => false",
+      "after": "Some(\"false\") => true",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "v02_parsers"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "retry_skips_ordinal",
+      "file": "src/shared/provenance/factory.rs",
+      "before": ".attempt\n            .checked_add(1)",
+      "after": ".attempt\n            .checked_add(0)",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "child_loses_depth",
+      "file": "src/shared/provenance/factory.rs",
+      "before": "d.checked_add(1)",
+      "after": "d.checked_add(0)",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "cause_without_correlation",
+      "file": "src/shared/provenance/incoming.rs",
+      "before": "Ok(_) if i.correlation.is_none()",
+      "after": "Ok(_) if false",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "p15_p16_p17_incoming"
+      ]
+    },
+    {
+      "module": "provenance",
+      "mutant": "collision_guard_removed",
+      "file": "src/shared/provenance/factory.rs",
+      "before": "if forbidden.contains(&scope_id) {",
+      "after": "if forbidden.contains(&scope_id) && false {",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "p23_explicit_cause_cannot_hide_execution_collision"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "exclusive_floor",
+      "file": "src/shared/logger/runtime.rs",
+      "before": "level < c.level",
+      "after": "level <= c.level",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "noop_emits",
+      "file": "src/shared/logger/runtime.rs",
+      "before": "config.format == \"none\",",
+      "after": "false,",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "ignores_no_color",
+      "file": "src/shared/logger/config.rs",
+      "before": "terminal && !no_color",
+      "after": "terminal",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "l06_color_and_controls"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "queue_exceeds_capacity",
+      "file": "src/shared/logger/delivery.rs",
+      "before": "mpsc::sync_channel::<Vec<u8>>(capacity)",
+      "after": "mpsc::sync_channel::<Vec<u8>>(capacity + 1)",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "l08_queue_and_deadline"
+      ]
+    },
+    {
+      "module": "logger",
+      "mutant": "cause_presence_inverted",
+      "file": "src/shared/logger/projection.rs",
+      "before": "error.source().is_some()",
+      "after": "error.source().is_none()",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "l04_l05_safe_projections"
+      ]
+    },
+    {
+      "module": "root",
+      "mutant": "summary_loses_retry",
+      "file": "src/root/demo.rs",
+      "before": "(\"attempts\", 2i64.into())",
+      "after": "(\"attempts\", 1i64.into())",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    }
+  ],
+  "source_hashes": {
+    "Cargo.toml": "a379e9aeecee5c6f02cd09ee4889a5531f84e4bb2bbd3f936b7c3facf9945104",
+    "Cargo.lock": "4689930911bbd34ab5b8ba377099fbb93ec756088dcc113720b48f2fbbac7126",
+    "tests/env_os_spec.rs": "bc0992cb2e15471ca7a9035e7b5145d087c8ec9d82761591bb13c67f27ef9009",
+    "tests/errors_spec.rs": "83a77ec2e43dbe170e338c2731d60400efd6af569933985d230fe2f668eb6437",
+    "tests/provenance_collision.rs": "78a033d9f331c0bc6c84e3af6d329ed809f5447ac97ba4d402799c31cfc301e8",
+    "tests/env_spec.rs": "76cc5195fa269f7e1f5e033ba5c322c1ef1e2f91edca4efc70d6d2a333e73931",
+    "tests/logger_controls.rs": "806752c3434a08c487ea31226ae68302b4d3919a64dbf5c7fe2d84c2e65f813d",
+    "tests/foundations_spec.rs": "66633015f0d1775a7d57d6eba8235f2cc29736a682f7f737858a928ee5865ae7",
+    "tests/logger_boundary.rs": "793d8df5fb57d9b9f93e8831b4da2d80c2b060f5382b70e4b9655902ca50d38f",
+    "tests/clock_spec.rs": "7a32b6a6698fde46bbd8f5bec8e45533ba6a5ee7ddb188f4cc2c0925da6e1c7d",
+    "tests/provenance_spec.rs": "3cd5ca968c955337724db9b396c752697ebdce2bfd9a85fc51dbfd81e47813af",
+    "tests/logger_spec.rs": "88e549a1b7897b2df29da09fcb75c46794281a023062d369d2681501459cc059",
+    "tests/id_spec.rs": "9d128959ff95f676d12b5e03d63b1224c4ef0261811ae529ea8aecf456921167",
+    "tests/secret_spec.rs": "c37f5f0e9ef10580b00ec8e1bb6b3cc209e4fcd58c4da52c227fa4f9ff2e2b96",
+    "examples/time_and_ids.rs": "538106a264fe67d47ded1541a97fa4d7f15f5eccc7df9f9eb09b43f6b4642e55",
+    "examples/errors.rs": "6b6d2d943ed683a0ba74824dfc7661d37335507e3c89ed50325ad930d7b08afe",
+    "src/lib.rs": "aaeec53b1671dabaf1c086494dabdea18d057f419580bc8b8e0285046bae51bc",
+    "src/domains/mod.rs": "b7d8773eeeb89fa0bb597f4a516c9f9cdaffa02b96a47775209857af7de1d4fd",
+    "src/bin/foundations.rs": "50633294d65425a9e678bb5e4c1532ac062b6e25885c95066fa8dd857b70e29c",
+    "src/shared/mod.rs": "8f8257894afddc48b9f7a3ccc7533bfa73c0f8b75e37dcaeca3a617ba03bd848",
+    "src/root/config.rs": "2414ce698653b3f954d4c187cb7d6665bcb3ac0f42236b456324e60ae551c7d2",
+    "src/root/logging.rs": "6ea9a0150a6cae5885131e441467dbec14e71f9219f9027fee41ca9be8499fc6",
+    "src/root/CONTRACT.md": "6d2f931ab34f4db5885ef5ee950d6608ab6c3bc8948cd8988de5e1c18ded4d64",
+    "src/root/mod.rs": "54fbc318430f886d74b1d45b9d4b76dc7c602d21bd3698d23bfd66443c9f3590",
+    "src/root/demo.rs": "95b73a03c65117eff4a1fcef8f256aa84abd947f1872b475026618c81ac69e0c",
+    "src/shared/logger/runtime.rs": "05d2e06ec53007bbf580a73b1f0f9b8a2a25dc677dde66c6fb81118410aba886",
+    "src/shared/logger/config.rs": "b814bc3a94947f40198658d7e1f17a823e824f0c6ac9147fbb9b22d65a0e3f53",
+    "src/shared/logger/delivery.rs": "340dfc7f0e691364a23f6d9b12d847dc4b23acfef78ceb199ac685dd3f52713e",
+    "src/shared/logger/CONTRACT.md": "6fbc56de032eee154e1e6ddf12b1edf2ccb3cf6413ae72309f943e17344ad388",
+    "src/shared/logger/formatter.rs": "06a4b840cae374fa80594083e8576acde36d7ef984ddeb47b6b4d15904b66f9a",
+    "src/shared/logger/README.md": "b7e25ff3e22cf93b974b22138dd7067812d3198fd71c3041f5cee5e098a0e7aa",
+    "src/shared/logger/mod.rs": "a60b410485e539f724de3516ed601d4780641a166d79a50fe9dc9afe81ae74f2",
+    "src/shared/logger/value.rs": "7abeeec03e0effa19a8d5742f81d669470df544e9eeb92a61dd993a48cefc901",
+    "src/shared/logger/projection.rs": "1cbb815427ae66f9dd4a30b4f70078ddc2b600207fc966872abc131ce4681093",
+    "src/shared/env/os.rs": "c1e45c7466946e3e6ce7977d0a9f4d672539cc271bbdbc5fe23ea31628ed2b2c",
+    "src/shared/env/lookup.rs": "53e795308f1a84029d1ef20899e22ee674107285f74df9ab9ce3b00981bf8a7c",
+    "src/shared/env/CONTRACT.md": "fd3d439f6a60b62602cdf26ccb3aecda899579db6174ededb9c43447e063b48c",
+    "src/shared/env/README.md": "7c0c29a9e08dbc042b272040c4a35d6fc799c8254f0c890a4e3782c8968bdcd5",
+    "src/shared/env/mod.rs": "466d8a936bfa681c17d354fcbb1a058cee3f6f0300efd87fcef683f8f853f220",
+    "src/shared/env/parse.rs": "924eb6d29d0de94416c98272fddb9b958ae0eac30ee2dbaa22ed5bc69fce7d38",
+    "src/shared/env/reader.rs": "438acf370e9fa54dc83b3838e46f0d06c2394359afc9bc9f5226a4852183b2f8",
+    "src/shared/provenance/links.rs": "615a0ea274946ab918576cc63d34cceffdfc5aa5feb2c59d9b1bc22a1fd9e55d",
+    "src/shared/provenance/operation.rs": "6b8eb983c261c562b2aaecd5921d2d17cfd9947f28db7928cfd4aad12f1d2a46",
+    "src/shared/provenance/factory.rs": "77771b9f4de750747099e591298052d824b82c7dfd137bd7e56be566a4d81fe6",
+    "src/shared/provenance/API.md": "f3870b8f17021e2da1ce993f29f166a0bf7afc112a6307999ea0958ff4239fb2",
+    "src/shared/provenance/CONTRACT.md": "519399045b07b9fb16dbe9c103d5d7528f2aa83816f98f378154dbb0f0121e4a",
+    "src/shared/provenance/incoming.rs": "d46181b1a300333f455e67cd28a903825215d719d7075e1aff28e18e0ccd8386",
+    "src/shared/provenance/README.md": "5f0b689698b5382fe61851b89a9cb02ef76644a097790408d939156ed15784fa",
+    "src/shared/provenance/scope.rs": "d05a621320ee7aa2ef4c324942b81d3ea4edbee2b64dfff61fa48c5db71cfec8",
+    "src/shared/provenance/mod.rs": "ba962d06f3b0ca86987cd791d69f319b7c97daee0a6d0a2770c86290c868b4b2",
+    "src/shared/provenance/actor.rs": "bb5ead5fe73b6d3422ac045a33782e50eb444c1981b527212ada2a22d3f5d0b7",
+    "src/shared/provenance/SCENARIOS.md": "4a9e424f2d70cd68c810e616fc9ba04816bac9c68c2aa847dd67ca4972842e24",
+    "src/shared/provenance/reference.rs": "1c8b0e1f20b8e9c689f9d800cce416cf652039d73165fae90a39b5005e40d94c",
+    "src/shared/provenance/work.rs": "3398aeda179be34d208a366bf46e26b524738a2a523bf7a6d593120e5d92dd14",
+    "src/shared/provenance/attribution.rs": "f6a506083b946839c7f5d062ee895693c4e932d0b9842d140daa1a0ed185ca8d",
+    "src/shared/id/sequence.rs": "fde31f2e5baebcaa8e32d5137a9ce21c6cf41d54401129ac7f9ec2075510eb9c",
+    "src/shared/id/CONTRACT.md": "290f8c10053d2ed4beb75fd521cbc0a4e9e7462380c6015ea753e7e766186ce6",
+    "src/shared/id/README.md": "5edee0235a9c9402c2ec900c248f8b668c41d57d704751da80f567409b7354b2",
+    "src/shared/id/mod.rs": "74f2a32242e4bf1bbf063a11f4c4ef3beeb1c84a8e35ab929ee0c6dff701ad77",
+    "src/shared/id/v7.rs": "3d44848b25ce41726c6a45b5368bec78fc00ab8c2b58c75183c8e14b4ceddb84",
+    "src/shared/id/value.rs": "a36a574b1927aaefd847fe33f33a4f682586297a1c53b8fe7d99149c40baa242",
+    "src/shared/secret/CONTRACT.md": "293efbaa175dc0086fa9ba5568acaeb2794e6472b93d7913d84ba8e4c1689587",
+    "src/shared/secret/README.md": "7ed3a1f9701bfd4c000572c9e9f5c98e482294afdf828a028285058c7a00b4f4",
+    "src/shared/secret/mod.rs": "ea69cb74191d3704ccac4a2ebe67fada174563a73c154a8225cd69a2f13ab6ac",
+    "src/shared/secret/value.rs": "0bbed2650efe655d3e11c95d4b47b0f9c7c69714868a7f7b9dcb048ce97e295f",
+    "src/shared/errors/classification.rs": "4e814038dd997f380d988b797752d702970aa38c4558246fa2d31454223803e0",
+    "src/shared/errors/CONTRACT.md": "a8d7f818722321cffe84ed3bdf79ca267d8d7f0dc9595218a40fc420a8d1f265",
+    "src/shared/errors/public.rs": "6b135fbb4569b8ada40e03d12da1ca5e64ae275154f06c6bbe92c8554423ff77",
+    "src/shared/errors/kind.rs": "273e98820bd5b938854a8b10798f2a9122cc2766fbbb88c7a0bae03548cafbc7",
+    "src/shared/errors/README.md": "6a5833e8edbfc1a09e123b65fd1a8a355081a18408dc64f99bb86bb9f35f9acf",
+    "src/shared/errors/mod.rs": "30ee2dbeabfb876adf486517f92b2612c3da4d8bd02278da4dacc22ef52b9c26",
+    "src/shared/errors/failure.rs": "f5b05ed8bdd86bdff27d364557260fe380ac1545d96d22f976cf0b89fadeb36c",
+    "src/shared/errors/context.rs": "942804d6fb7ee6ca5486ba79de78f8846540339a9f2b3231f5bc19d443029667",
+    "src/shared/clock/fake.rs": "da9f7fd65f65713cbc360398bdc04381bef19972a52a3b16b67825274c0287e3",
+    "src/shared/clock/CONTRACT.md": "0bb9cafff31e2293ea466c628f1b1670ddf3fcd95bd430a1400e80f1a0162051",
+    "src/shared/clock/system.rs": "af71a8467e868705f64a3dab4778ab8ebee3ca67e89f589acff019a8bacc5416",
+    "src/shared/clock/README.md": "41ffd7f9246ab83fd7f6fa85d2ae7bc1d0f3513b401d8ce34b6bbe2a9d5ee358",
+    "src/shared/clock/mod.rs": "9790e02c5fb35ddfd27baa7a207d115edeff55529b6dbd82917e360f0076187d"
+  },
+  "restored_baseline_passed": true,
+  "workspace_unchanged": true,
+  "copy_restored": true
+}

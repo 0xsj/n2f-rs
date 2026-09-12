@@ -1,0 +1,23 @@
+{
+  "language": "n2f-rs",
+  "results": [
+    {
+      "module": "root",
+      "mutant": "summary_loses_retry",
+      "file": "src/root/demo.rs",
+      "before": "(\"attempts\", 2i64.into())",
+      "after": "(\"attempts\", 1i64.into())",
+      "build_exit": 0,
+      "test_exit": 101,
+      "outcome": "killed",
+      "failing_cases": [
+        "f02_f03_modes_and_identities"
+      ]
+    }
+  ],
+  "baseline_build_passed": true,
+  "baseline_passed": true,
+  "restored_baseline_passed": true,
+  "workspace_unchanged_at_run": true,
+  "copy_restored": true
+}

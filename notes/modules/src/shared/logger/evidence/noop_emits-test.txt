@@ -1,0 +1,82 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/n2f_rs-c05029f0875acb35)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/foundations.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/foundations-e40140b59cea8161)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/clock_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/clock_spec-78cb6618797e0daa)
+
+running 6 tests
+test c02_advance ... ok
+test c05_system ... ok
+test c03_wall_correction ... ok
+test c01_initial_and_stable ... ok
+test c04_refusal_is_atomic ... ok
+test c06_shared_fake ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/env_os_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/env_os_spec-6f3ce1b04aee2b58)
+
+running 1 test
+test v01_os_capture_matches_child_environment ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/env_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/env_spec-bbd3b68ea55ad76d)
+
+running 6 tests
+test v03_definitions ... ok
+test v01_presence ... ok
+test v04_failures ... ok
+test v02_parsers ... ok
+test v05_manifest ... ok
+test v06_duplicate ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/errors_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/errors_spec-f2f5142e592baafd)
+
+running 11 tests
+test e03_success_and_unknown_are_different ... ok
+test e01_vocabulary ... ok
+test e02_construction ... ok
+test e05_metadata_ownership ... ok
+test e04_public_projection ... ok
+test e06_annotation_keeps_typed_case_and_source ... ok
+test e08_classified_timeouts_and_cancellation_survive_context ... ok
+test e07_translation_owns_projection_and_keeps_source ... ok
+test e09_operation_owned_aggregate_requires_explicit_summary ... ok
+test e11_boxed_source_preserves_concrete_diagnostic ... ok
+test e10_merge_and_source_replacement ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/foundations_spec.rs (/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-process-mutations-ezxhpmkg/target/debug/deps/foundations_spec-b8c72d87d4caf2e5)
+
+running 2 tests
+test f01_f04_invalid_before_boot ... ok
+test f02_f03_modes_and_identities ... FAILED
+
+failures:
+
+---- f02_f03_modes_and_identities stdout ----
+
+thread 'f02_f03_modes_and_identities' panicked at tests/foundations_spec.rs:68:13:
+assertion failed: text.is_empty()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    f02_f03_modes_and_identities
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test foundations_spec`
