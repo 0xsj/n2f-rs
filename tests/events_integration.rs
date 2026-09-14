@@ -3,7 +3,7 @@ use n2f_rs::shared::{
     errors::{Classified, Failure, Kind},
     events::{
         Envelope, Publisher, Receipt,
-        postgres::{Mailbox, Store, enqueue, migration},
+        postgres::{Mailbox, Store, enqueue, migration, receipts_migration},
     },
     id::Id,
     postgres::{Config, Database, Migration, map},
@@ -42,7 +42,7 @@ async fn count(db: &Database, sql: &str) -> i64 {
     .unwrap()
 }
 async fn ready(db: &Database) {
-    exec(db,"UPDATE n2f_outbox SET available_at=clock_timestamp(); UPDATE n2f_mailbox SET available_at=clock_timestamp()").await;
+    exec(db,"UPDATE n2f_outbox SET available_at=clock_timestamp(); UPDATE n2f_mailbox_receipts SET available_at=clock_timestamp()").await;
 }
 async fn add(db: &Database, e: Envelope) {
     db.transaction(move |tx| Box::pin(async move { enqueue(tx, &e).await }))
@@ -85,6 +85,7 @@ async fn outbox_mailbox_integration() {
             version: 2,
             sql: "CREATE TABLE event_fixture(id integer PRIMARY KEY)".into(),
         },
+        receipts_migration(3),
     ])
     .await
     .unwrap();
@@ -139,7 +140,7 @@ async fn outbox_mailbox_integration() {
     );
     assert!(
         mailbox
-            .consume(|tx, _| Box::pin(async move {
+            .consume("fixture", |tx, _| Box::pin(async move {
                 sqlx::query("INSERT INTO event_fixture VALUES(2)")
                     .execute(tx)
                     .await
@@ -153,7 +154,7 @@ async fn outbox_mailbox_integration() {
     ready(&db).await;
     assert!(
         mailbox
-            .consume(|tx, _| Box::pin(async move {
+            .consume("fixture", |tx, _| Box::pin(async move {
                 sqlx::query("INSERT INTO event_fixture VALUES(2)")
                     .execute(tx)
                     .await
@@ -167,7 +168,15 @@ async fn outbox_mailbox_integration() {
     mailbox.publish(&event(1)).await.unwrap();
     assert!(
         !mailbox
-            .consume(|_, _| Box::pin(async { panic!("duplicate consumed") }))
+            .consume("fixture", |_, _| Box::pin(async {
+                panic!("duplicate consumed")
+            }))
+            .await
+            .unwrap()
+    );
+    assert!(
+        mailbox
+            .consume("other", |_, _| Box::pin(async { Ok(()) }))
             .await
             .unwrap()
     );
@@ -204,7 +213,7 @@ async fn outbox_mailbox_integration() {
         ready(&db).await;
         assert!(
             mailbox
-                .consume(|_, _| Box::pin(async {
+                .consume("fixture", |_, _| Box::pin(async {
                     Err(Failure::new(Kind::Conflict, "fixture refusal"))
                 }))
                 .await
@@ -214,7 +223,7 @@ async fn outbox_mailbox_integration() {
     assert_eq!(
         count(
             &db,
-            "SELECT count(*) FROM n2f_mailbox WHERE state='dead' AND attempts=5"
+            "SELECT count(*) FROM n2f_mailbox_receipts WHERE consumer='fixture' AND state='dead' AND attempts=5"
         )
         .await,
         1
@@ -229,7 +238,11 @@ async fn outbox_mailbox_integration() {
         b.unwrap().unwrap().event.id()
     );
     // jsonb output spacing expands this valid wire beyond the envelope budget.
-    exec(&db, "TRUNCATE n2f_outbox, n2f_mailbox").await;
+    exec(
+        &db,
+        "TRUNCATE n2f_outbox, n2f_mailbox, n2f_mailbox_receipts",
+    )
+    .await;
     let large = Envelope::new(
         ident(700),
         "diagnostic.created.v1",
@@ -242,7 +255,7 @@ async fn outbox_mailbox_integration() {
     assert!(store.dispatch(&mailbox, ident(701)).await.unwrap());
     assert!(
         mailbox
-            .consume(|_, got| Box::pin(async move {
+            .consume("fixture", |_, got| Box::pin(async move {
                 assert_eq!(got.id(), ident(700));
                 Ok(())
             }))

@@ -1,14 +1,20 @@
 use super::{
+    audit::compose as compose_audit,
+    auth::{AuthConfig, compose as compose_auth, load_auth},
     config::{Config, load_config},
     logging::logging,
+    proxy::{TrustedProxy, parse_trusted_proxies, trusted_source},
 };
+use crate::domains::audit::migration as audit_migration;
+use crate::domains::identity::transport::http::WebSocketAdmission;
 use crate::shared::{
     clock::SystemClock,
-    env::Reader,
+    env::{Reader, Var},
     errors::{Failure, Kind},
+    events::jetstream::Config as BrokerConfig,
     health::{Check, Gate},
     http::{
-        axum::{Config as ServerConfig, RequestFailure, Route, Server},
+        axum::{Config as ServerConfig, RequestFailure, Route, Server, json_work},
         otel::Observer,
     },
     httpclient::{
@@ -20,7 +26,10 @@ use crate::shared::{
     provenance as p,
     socket::{
         Message as SocketMessage,
-        axum::{Server as SocketServer, Session as SocketSession},
+        axum::{
+            Admission as SocketAdmission, Authorize as SocketAuthorize,
+            Revalidate as SocketRevalidate, Server as SocketServer, Session as SocketSession,
+        },
     },
     telemetry::otel::{Config as TelemetryConfig, Runtime},
 };
@@ -41,6 +50,8 @@ use std::{
 };
 use tracing_subscriber::{Layer, layer::SubscriberExt};
 pub struct HTTPConfig {
+    pub auth: Option<AuthConfig>,
+    pub manifest: Vec<Var>,
     pub socket_origin: String,
     pub outbound_origin: String,
     pub database: Option<DatabaseConfig>,
@@ -51,9 +62,21 @@ pub struct HTTPConfig {
     pub timeout: Duration,
     pub shutdown: Duration,
     pub telemetry: TelemetryConfig,
+    pub events: EventsConfig,
+    pub audit_enabled: bool,
+    pub audit_consumer: String,
+    pub trusted_proxies: Vec<TrustedProxy>,
+}
+pub struct EventsConfig {
+    pub transport: String,
+    pub broker: Option<BrokerConfig>,
+    pub interval: Duration,
 }
 pub fn load_http_config(lookup: impl Fn(&str) -> Option<String>) -> Result<HTTPConfig, Failure> {
     let base = load_config(&lookup)?;
+    // A password without a username must be refused, not ignored (AUTH_BUILD.md);
+    // presence is taken from the raw lookup so the value is never recorded.
+    let smtp_password_present = lookup("AUTH_SMTP_PASSWORD").is_some_and(|v| !v.is_empty());
     let mut r = Reader::new(lookup);
     let host = r
         .string("HTTP_HOST", "127.0.0.1")
@@ -65,6 +88,7 @@ pub fn load_http_config(lookup: impl Fn(&str) -> Option<String>) -> Result<HTTPC
     let test_routes = r.boolean("HTTP_TEST_ROUTES", false);
     let outbound_origin = r.string("OUTBOUND_ORIGIN", "");
     let socket_origin = r.string("WS_ORIGIN", "http://localhost:3000");
+    let trusted_proxies = parse_trusted_proxies(&r.string("HTTP_TRUSTED_PROXIES", ""))?;
     let telemetry = TelemetryConfig {
         mode: r.enumeration("TELEMETRY_MODE", "none", &["none", "otlp"]),
         endpoint: r.string("TELEMETRY_ENDPOINT", "http://127.0.0.1:7242"),
@@ -87,9 +111,37 @@ pub fn load_http_config(lookup: impl Fn(&str) -> Option<String>) -> Result<HTTPC
     } else {
         None
     };
+    let transport = r.enumeration("EVENTS_TRANSPORT", "postgres", &["postgres", "jetstream"]);
+    let interval = Duration::from_millis(r.int("EVENTS_INTERVAL_MS", 100, 10, 60000) as u64);
+    let broker = if transport == "jetstream" {
+        Some(BrokerConfig {
+            url: r.secret("NATS_URL"),
+            stream: r.string("NATS_STREAM", "N2F_EVENTS"),
+            consumer: r.string("NATS_CONSUMER", "mailbox"),
+            timeout: Duration::from_millis(r.int("NATS_TIMEOUT_MS", 1000, 1, 5000) as u64),
+        })
+    } else {
+        None
+    };
+    let auth = load_auth(&mut r, host, smtp_password_present)?;
+    let audit_enabled = r.boolean("AUDIT_ENABLED", auth.is_some());
+    let audit_consumer = r.string("AUDIT_CONSUMER", "audit");
     r.check()?;
+    if auth.is_some() && database.is_none() {
+        return Err(Failure::new(Kind::Invalid, "invalid configuration")
+            .with_type("env.invalid")
+            .with_field("AUTH_ENABLED", "requires DATABASE_ENABLED=true"));
+    }
+    if audit_enabled && auth.is_none() {
+        return Err(Failure::new(Kind::Invalid, "invalid configuration")
+            .with_type("env.invalid")
+            .with_field("AUDIT_ENABLED", "requires AUTH_ENABLED=true"));
+    }
+    let manifest = r.manifest()?;
     telemetry.validate()?;
     Ok(HTTPConfig {
+        auth,
+        manifest,
         socket_origin,
         outbound_origin,
         database,
@@ -100,6 +152,14 @@ pub fn load_http_config(lookup: impl Fn(&str) -> Option<String>) -> Result<HTTPC
         timeout,
         shutdown,
         telemetry,
+        events: EventsConfig {
+            transport,
+            broker,
+            interval,
+        },
+        audit_enabled,
+        audit_consumer,
+        trusted_proxies,
     })
 }
 struct Diagnostics(Arc<AtomicU64>);
@@ -179,18 +239,22 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
     let socket_factory = factory.clone();
     let socket_executor = executor.clone();
     let socket_attribution = attribution.clone();
-    let open = Arc::new(move |name: &str, incoming: &p::IncomingResult| {
-        factory.lock().unwrap_or_else(|e| e.into_inner()).enter(
-            p::RootSpec {
-                work_id: None,
-                origin: p::Origin::Request,
-                operation: p::Operation::new(name.into())?,
-                attribution: attribution.clone(),
-                executor: executor.clone(),
-            },
-            incoming,
-        )
-    });
+    let mut socket_authorize: Option<SocketAuthorize> = None;
+    let mut socket_revalidate: Option<SocketRevalidate> = None;
+    let open = Arc::new(
+        move |name: &str, incoming: &p::IncomingResult, admitted: Option<p::Attribution>| {
+            factory.lock().unwrap_or_else(|e| e.into_inner()).enter(
+                p::RootSpec {
+                    work_id: None,
+                    origin: p::Origin::Request,
+                    operation: p::Operation::new(name.into())?,
+                    attribution: admitted.unwrap_or_else(|| attribution.clone()),
+                    executor: executor.clone(),
+                },
+                incoming,
+            )
+        },
+    );
     let tokio = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -209,6 +273,7 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
     } else {
         None
     };
+    let mut audit_runtime: Option<Arc<super::audit::Runtime>> = None;
     let checks: Vec<Check> = database
         .as_ref()
         .map(|db| {
@@ -251,9 +316,11 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         Route {
             path: "/_examples/outbound".into(),
             operation: "http.example.outbound".into(),
+            method: "GET".into(),
+            admission: None,
             handler: Arc::new(move |_| {
                 let outbound = outbound.clone();
-                Box::pin(async move {
+                json_work(async move {
                     let client = outbound.ok_or_else(|| {
                         RequestFailure::Known(Failure::new(
                             Kind::Unavailable,
@@ -276,14 +343,18 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         Route {
             path: "/livez".into(),
             operation: "health.live".into(),
-            handler: Arc::new(|_| Box::pin(async { Ok(serde_json::json!({"status":"alive"})) })),
+            method: "GET".into(),
+            admission: None,
+            handler: Arc::new(|_| json_work(async { Ok(serde_json::json!({"status":"alive"})) })),
         },
         Route {
             path: "/readyz".into(),
             operation: "health.ready".into(),
+            method: "GET".into(),
+            admission: None,
             handler: Arc::new(move |_| {
                 let gate = readiness.clone();
-                Box::pin(async move {
+                json_work(async move {
                     if gate.ready().await {
                         Ok(serde_json::json!({"status":"ready"}))
                     } else {
@@ -298,13 +369,17 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         Route {
             path: "/_examples/http/success".into(),
             operation: "http.example.success".into(),
-            handler: Arc::new(|_| Box::pin(async { Ok(serde_json::json!({"ok":true})) })),
+            method: "GET".into(),
+            admission: None,
+            handler: Arc::new(|_| json_work(async { Ok(serde_json::json!({"ok":true})) })),
         },
         Route {
             path: "/_examples/http/conflict".into(),
             operation: "http.example.conflict".into(),
+            method: "GET".into(),
+            admission: None,
             handler: Arc::new(|_| {
-                Box::pin(async {
+                json_work(async {
                     Err(RequestFailure::Known(
                         Failure::new(Kind::Conflict, "item already exists")
                             .with_type("demo.exists"),
@@ -315,8 +390,10 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         Route {
             path: "/_examples/http/unavailable".into(),
             operation: "http.example.unavailable".into(),
+            method: "GET".into(),
+            admission: None,
             handler: Arc::new(|_| {
-                Box::pin(async {
+                json_work(async {
                     Err(RequestFailure::Known(
                         Failure::new(Kind::Unavailable, "dependency unavailable")
                             .with_type("demo.offline"),
@@ -327,7 +404,9 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         Route {
             path: "/_examples/http/unknown".into(),
             operation: "http.example.unknown".into(),
-            handler: Arc::new(|_| Box::pin(async { Err(RequestFailure::Unknown) })),
+            method: "GET".into(),
+            admission: None,
+            handler: Arc::new(|_| json_work(async { Err(RequestFailure::Unknown) })),
         },
     ];
 
@@ -335,14 +414,18 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         routes.push(Route {
             path: "/_examples/http/panic".into(),
             operation: "http.example.panic".into(),
-            handler: Arc::new(|_| Box::pin(async { panic!("credential-SENTINEL") })),
+            method: "GET".into(),
+            admission: None,
+            handler: Arc::new(|_| json_work(async { panic!("credential-SENTINEL") })),
         });
         let timeout = c.timeout;
         routes.push(Route {
             path: "/_examples/http/delay".into(),
             operation: "http.example.delay".into(),
+            method: "GET".into(),
+            admission: None,
             handler: Arc::new(move |_| {
-                Box::pin(async move {
+                json_work(async move {
                     tokio::time::sleep(timeout * 2).await;
                     Ok(serde_json::json!({"ok":true}))
                 })
@@ -351,8 +434,10 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
         routes.push(Route {
             path: "/_examples/http/context".into(),
             operation: "http.example.context".into(),
+            method: "GET".into(),
+            admission: None,
             handler: Arc::new(|_| {
-                Box::pin(async {
+                json_work(async {
                     use opentelemetry::trace::TraceContextExt;
                     let trace_before = opentelemetry::Context::current()
                         .span()
@@ -386,21 +471,97 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
             }),
         });
     }
+    if let Some(auth) = &c.auth {
+        let db = database.clone().expect("auth requires the database");
+        match tokio.block_on(compose_auth(
+            auth,
+            db.clone(),
+            clock.clone(),
+            &c.manifest,
+            log.log.clone(),
+            (c.audit_enabled).then(|| audit_migration(4)),
+        )) {
+            Ok((auth_routes, manifest, admission, authorize, revalidate)) => {
+                routes.extend(auth_routes);
+                socket_authorize = Some(authorize);
+                socket_revalidate = Some(revalidate);
+                log.log.info("http.start", manifest);
+                let event_config = EventsConfig {
+                    transport: c.events.transport.clone(),
+                    broker: c.events.broker.take(),
+                    interval: c.events.interval,
+                };
+                if c.audit_enabled {
+                    match tokio.block_on(compose_audit(
+                        event_config,
+                        c.audit_consumer.clone(),
+                        db.clone(),
+                        clock.clone(),
+                        admission,
+                        log.log.clone(),
+                    )) {
+                        Ok((route, runtime)) => {
+                            routes.push(route);
+                            audit_runtime = Some(runtime);
+                        }
+                        Err(_) => {
+                            eprintln!("audit startup failed");
+                            if let Some(db) = &database {
+                                let _ = tokio.block_on(db.close(c.shutdown));
+                            }
+                            let _ = telemetry.close(c.shutdown);
+                            let _ = log.close(c.shutdown);
+                            return 1;
+                        }
+                    }
+                }
+            }
+            Err(_) => {
+                eprintln!("authentication startup failed");
+                if let Some(db) = &database {
+                    let _ = tokio.block_on(db.close(c.shutdown));
+                }
+                let _ = telemetry.close(c.shutdown);
+                let _ = log.close(c.shutdown);
+                return 1;
+            }
+        }
+    }
+    let trusted_proxies = c.trusted_proxies.clone();
     let adapter = Arc::new(
         Server::new(ServerConfig {
             routes,
             observer: Arc::new(Observer::new(telemetry.clone())),
             log: log.log.clone(),
             open,
+            source: Arc::new(move |peer, headers| trusted_source(&trusted_proxies, peer, headers)),
             timeout: c.timeout,
             max_body: 1 << 20,
         })
         .unwrap(),
     );
     let socket_log = log.log.clone();
-    let sockets = Arc::new(SocketServer::new(
+    let sockets = Arc::new(SocketServer::new_with_revalidation(
         c.socket_origin,
-        Arc::new(move || {
+        socket_authorize,
+        socket_revalidate,
+        Arc::new(move |admitted: Option<SocketAdmission>| {
+            let socket_attribution = if let Some(value) = admitted {
+                let admission = Arc::downcast::<WebSocketAdmission>(value).map_err(|_| {
+                    Failure::new(Kind::Internal, "invalid socket admission")
+                        .with_type("socket.admission_corrupt")
+                })?;
+                let initiator = p::Actor::new(
+                    p::ActorKind::User,
+                    admission.principal.principal_id.to_string(),
+                )?;
+                p::Attribution::new(p::AttributionSpec {
+                    initiator: Some(initiator),
+                    ..Default::default()
+                })?
+            } else {
+                socket_attribution.clone()
+            };
             let connection = socket_factory
                 .lock()
                 .unwrap_or_else(|e| e.into_inner())
@@ -408,7 +569,7 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
                     work_id: None,
                     origin: p::Origin::Request,
                     operation: p::Operation::new("socket.connection".into())?,
-                    attribution: socket_attribution.clone(),
+                    attribution: socket_attribution,
                     executor: socket_executor.clone(),
                 })?;
             let connection_log = socket_log.with_scope(&connection);
@@ -446,8 +607,16 @@ pub fn run_http(lookup: impl Fn(&str) -> Option<String>) -> i32 {
             })
         }),
     ));
+    if let Some(runtime) = &audit_runtime {
+        tokio.block_on(async { runtime.start() });
+    }
     let (code, mut remaining) =
         tokio.block_on(serve(adapter, c.host, c.port, c.shutdown, gate, sockets));
+    if let Some(runtime) = audit_runtime {
+        let start = Instant::now();
+        tokio.block_on(runtime.close(remaining));
+        remaining = remaining.saturating_sub(start.elapsed());
+    }
     if let Some(client) = outbound_native {
         client.close();
     }

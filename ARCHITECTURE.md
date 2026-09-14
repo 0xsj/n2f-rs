@@ -2,16 +2,17 @@
 
 ## First domain slice
 
-[Identity, audit and org ownership](DOMAINS.md) is defined. Identity currently
-implements pure principal values and lifecycle transitions. Application ports,
-transactional persistence and domain transport follow those leaves; audit and org
-are planned. Principal references alone confer no authentication or org authority.
+[Identity, audit and org ownership](DOMAINS.md) is defined. Identity implements
+authentication, persistence and transport; audit ingestion and org value leaves
+are also implemented. The org application port, transactional persistence and
+domain transport follow those leaves. Principal references alone confer no
+authentication or org authority.
 [Authentication](AUTHENTICATION.md) is required within identity, independent of an
 account/profile domain. Credential/session/challenge contracts precede their adapters.
 
 ## Starting point
 
-n2f-rs starts as one library crate with three module locations: `root`, `domains`, and `shared`. The intended application shape is a modular monolith, following the ownership and explicit composition used in Overwatch. The foundations process now composes the implemented shared modules. Axum/Hyper on Tokio, SQLx PostgreSQL, reqwest and native WebSockets are selected and implemented. The first business domain remains subsequent work. PostgreSQL 18 and Redis are available through local Compose.
+n2f-rs starts as one library crate with three module locations: `root`, `domains`, and `shared`. The intended application shape is a modular monolith, following the ownership and explicit composition used in Overwatch. The foundations process now composes the implemented shared modules. Axum/Hyper on Tokio, SQLx PostgreSQL, reqwest and native WebSockets are selected and implemented. Identity and audit are integrated slices; org value leaves now establish the next business boundary. PostgreSQL 18 and Redis are available through local Compose.
 
 Keep the foundation small enough that an ordinary feature has an obvious path. Add a boundary when it protects real behavior or isolates a real dependency. A placeholder folder does not establish a working capability.
 

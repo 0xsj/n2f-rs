@@ -1,0 +1,21 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-app-mutations-_zzf083m/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.61s
+     Running tests/identity_app_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_app_spec-af8c241ce1465561)
+
+running 13 tests
+test u02_config_validates_once ... ok
+test u12_request_reset_mails_even_unverified_credentials ... ok
+test u04_duplicate_is_accepted_without_replacement_or_mail ... ok
+test u06_verify_email_requires_password_proof_and_consumes_once ... ok
+test u04_register_refusals_and_failures_keep_their_meaning ... ok
+test u05_request_verification_outcomes ... ok
+test u08_authenticate_resolves_through_storage ... ok
+test u04_register_hashes_before_store_and_mails_after_commit ... ok
+test u07_login_issues_a_fresh_session_only_for_verified_active_matches ... ok
+test u10_logout_all_increments_the_epoch_with_a_guard ... ok
+test u09_logout_is_idempotent ... ok
+test u11_change_password_verifies_proof_then_replaces_with_guards ... ok
+test u13_reset_password_consumes_and_replaces_without_a_session ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

@@ -1,0 +1,29 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-adapter-mutations-_433dd0d/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.62s
+     Running tests/password_hash_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/password_hash_spec-5abacc088d84dcfc)
+
+running 10 tests
+test h09_failures_carry_no_secret_text ... ok
+test h08_configuration_is_validated ... ok
+test h02_entropy_failure_refuses_without_fallback ... ok
+test h03_corrupt_records_never_run_the_work ... ok
+test h06_abandoned_waiter_leaves_the_queue ... ok
+test h06_saturation_and_queue_timeout_refuse_without_a_slot ... ok
+test h07_in_flight_work_completes_past_the_queue_wait_and_releases_after_panic ... ok
+test h05_absent_credential_costs_work_and_always_mismatches ... ok
+test h03_h04_verify_outcomes_follow_fixture ... ok
+test h01_h10_hashes_reproduce_fixture_records ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.63s
+
+     Running tests/token_codec_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/token_codec_spec-17b507e05f92958f)
+
+running 5 tests
+test t05_issued_has_no_debug_presentation ... ok
+test t01_entropy_failure_refuses_without_fallback ... ok
+test t02_t07_noncanonical_secrets_are_refused ... ok
+test t01_t04_t05_issue_round_trips_and_redacts ... ok
+test t02_t03_t07_fixture_digests ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

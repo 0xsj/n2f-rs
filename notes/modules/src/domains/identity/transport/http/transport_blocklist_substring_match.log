@@ -1,0 +1,28 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-transport-mutations-tszjp_i7/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.96s
+     Running tests/identity_local_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_local_spec-32267c9fa7a4476b)
+
+running 7 tests
+test l02_invalid_limits_refused ... ok
+test b02_missing_or_empty_list_is_configuration_failure ... ok
+test l03_bounded_store_evicts_expired_and_refuses_when_full ... ok
+test l01_state_holds_only_keyed_digests ... ok
+test m01_undelivered_mail_reports_not_delivered_and_retains_nothing ... ok
+test l01_l02_buckets_are_independent_and_refuse_with_retry_after ... ok
+test b01_matches_are_exact_after_nfc_and_case_folding ... FAILED
+
+failures:
+
+---- b01_matches_are_exact_after_nfc_and_case_folding stdout ----
+
+thread 'b01_matches_are_exact_after_nfc_and_case_folding' panicked at tests/identity_local_spec.rs:232:5:
+assertion failed: b.check_blocklist(&password("password1234567890")).await.unwrap()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    b01_matches_are_exact_after_nfc_and_case_folding
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test identity_local_spec`

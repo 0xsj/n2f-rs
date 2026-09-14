@@ -1,0 +1,62 @@
+{
+  "language": "rs",
+  "caught": 6,
+  "selected": 6,
+  "exhaustive": false,
+  "evidence": ".",
+  "cases": [
+    {
+      "name": "token_in_query",
+      "file": "src/domains/identity/infra/smtp/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "a5748ae79de505d517a60eaa4332ea54ffbb80663cf15d1e98f4738962e46ffb"
+    },
+    {
+      "name": "delivered_on_rejection",
+      "file": "src/domains/identity/infra/smtp/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "a5748ae79de505d517a60eaa4332ea54ffbb80663cf15d1e98f4738962e46ffb"
+    },
+    {
+      "name": "timeout_ignored",
+      "file": "src/domains/identity/infra/smtp/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "a5748ae79de505d517a60eaa4332ea54ffbb80663cf15d1e98f4738962e46ffb"
+    },
+    {
+      "name": "token_in_log",
+      "file": "src/domains/identity/infra/smtp/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "a5748ae79de505d517a60eaa4332ea54ffbb80663cf15d1e98f4738962e46ffb"
+    },
+    {
+      "name": "expiry_omitted",
+      "file": "src/domains/identity/infra/smtp/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "a5748ae79de505d517a60eaa4332ea54ffbb80663cf15d1e98f4738962e46ffb"
+    },
+    {
+      "name": "suspended_gets_mail",
+      "file": "src/domains/identity/app/command.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "ee06c32ca76d8d33e5ea99e0865dae5aca69f207215dbd4030b46ed80cec2830"
+    }
+  ],
+  "logs": [
+    "mail_baseline.log",
+    "mail_delivered_on_rejection.log",
+    "mail_expiry_omitted.log",
+    "mail_restored.log",
+    "mail_suspended_gets_mail.log",
+    "mail_timeout_ignored.log",
+    "mail_token_in_log.log",
+    "mail_token_in_query.log"
+  ],
+  "verified_on": "2026-09-12"
+}

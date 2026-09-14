@@ -1,6 +1,4 @@
-//! Identity principal leaves. See CONTRACT.md.
-// Auth exports below are refusing scaffolds until their red specs are implemented.
-mod auth_spec_stub;
+//! Identity principal and authentication leaves. See CONTRACT.md and AUTH_CONTRACT.md.
 pub mod auth_state;
 pub mod challenge;
 pub mod credential;
@@ -8,11 +6,22 @@ pub mod email;
 pub mod password;
 pub mod session;
 pub mod token;
+pub mod upgrade_ticket;
 use crate::shared::{
     errors::{Failure, Kind as ErrorKind},
     id::Id,
     validation,
 };
+/// Common bounds shared by every build: Unix milliseconds and a signed-32-bit
+/// version/epoch ceiling, so host numeric ranges do not change domain behavior.
+pub const MAX_TIME_MS: i64 = 253402300799999;
+pub const MAX_VERSION: u32 = 2147483647;
+pub(super) fn time_in_range(at: i64) -> bool {
+    (0..=MAX_TIME_MS).contains(&at)
+}
+pub(super) fn version_in_range(version: u32) -> bool {
+    (1..=MAX_VERSION).contains(&version)
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
     Human,

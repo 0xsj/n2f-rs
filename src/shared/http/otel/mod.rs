@@ -170,6 +170,7 @@ impl super::axum::Observation for Observation {
                 use crate::shared::errors::{Classified, public_info};
                 let p = public_info(match failure {
                     super::axum::RequestFailure::Known(e) => e.classification(),
+                    super::axum::RequestFailure::Refused(r) => r.failure.classification(),
                     super::axum::RequestFailure::Unknown => None,
                 });
                 record.add_attribute("n2f.error.kind", p.kind.as_str());

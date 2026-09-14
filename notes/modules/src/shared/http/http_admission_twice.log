@@ -1,0 +1,37 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-http-mutations-h13kfgws/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.05s
+     Running tests/http_feature_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/http_feature_spec-2f81e7eaee2da519)
+
+running 6 tests
+test h16_response_allowlist_and_host_cookie_refusals ... ok
+test h15_cookie_parsing_keeps_duplicates_and_refuses_malformed ... ok
+test h15_method_matching_and_allow_set ... ok
+test h17_admission_runs_before_open ... FAILED
+test h17_h18_admission_before_open_once_with_attribution_and_refusal ... FAILED
+test h15_h16_post_body_head_and_set_cookie_over_the_wire ... ok
+
+failures:
+
+---- h17_admission_runs_before_open stdout ----
+
+thread 'h17_admission_runs_before_open' panicked at tests/http_feature_spec.rs:505:5:
+assertion `left == right` failed
+  left: ["admit", "admit", "open:op.a"]
+ right: ["admit", "open:op.a"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- h17_h18_admission_before_open_once_with_attribution_and_refusal stdout ----
+
+thread 'h17_h18_admission_before_open_once_with_attribution_and_refusal' panicked at tests/http_feature_spec.rs:465:5:
+assertion `left == right` failed: admission once per matched request, never for 404/405: ["admit", "admit", "open:op.me", "admit", "admit", "open:op.me", "admit", "admit", "open:http.admission", "admit", "admit", "open:http.admission", "open:op.me", "open:http.unmatched"]
+  left: 8
+ right: 4
+
+
+failures:
+    h17_admission_runs_before_open
+    h17_h18_admission_before_open_once_with_attribution_and_refusal
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test http_feature_spec`

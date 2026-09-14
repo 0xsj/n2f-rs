@@ -1,0 +1,33 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-mutations-dn5zqjvm/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.54s
+     Running tests/auth_leaves_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/auth_leaves_spec-8748ded1d77b5cd6)
+
+running 12 tests
+test auth_credential_restore_preserves_presence ... ok
+test auth_digest_owns_bytes ... ok
+test auth_challenge_restore_and_invalidation ... ok
+test auth_challenge_single_use_value ... ok
+test auth_epoch_guards_and_ownership ... ok
+test auth_credential_rejects_corruption ... ok
+test auth_challenge_corrupt_snapshots ... ok
+test auth_session_corrupt_snapshots ... ok
+test auth_session_revocation_and_restore ... ok
+test auth_private_presentation ... ok
+test auth_session_issue_and_activity ... FAILED
+test auth_value_fixtures ... ok
+
+failures:
+
+---- auth_session_issue_and_activity stdout ----
+
+thread 'auth_session_issue_and_activity' panicked at tests/auth_leaves_spec.rs:26:18:
+expected refusal identity.session_rejected
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    auth_session_issue_and_activity
+
+test result: FAILED. 11 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test auth_leaves_spec`

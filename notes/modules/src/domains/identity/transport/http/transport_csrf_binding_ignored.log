@@ -1,0 +1,81 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-transport-mutations-tszjp_i7/work)
+warning: unused variable: `binding`
+   --> src/domains/identity/transport/http/mod.rs:479:45
+    |
+479 |     fn check_csrf(&self, request: &Request, binding: &str) -> Result<(), Failure> {
+    |                                             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_binding`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: `n2f-rs` (lib) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.60s
+     Running tests/identity_local_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_local_spec-32267c9fa7a4476b)
+
+running 7 tests
+test l02_invalid_limits_refused ... ok
+test m01_undelivered_mail_reports_not_delivered_and_retains_nothing ... ok
+test l01_state_holds_only_keyed_digests ... ok
+test l03_bounded_store_evicts_expired_and_refuses_when_full ... ok
+test l01_l02_buckets_are_independent_and_refuse_with_retry_after ... ok
+test b02_missing_or_empty_list_is_configuration_failure ... ok
+test b01_matches_are_exact_after_nfc_and_case_folding ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/identity_transport_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_transport_spec-e8633b02cf2ee52f)
+
+running 12 tests
+test r01_configuration_refusals ... ok
+test r02_r04_csrf_issuance_and_no_store ... ok
+test r08_rate_limit_projection ... ok
+test r05_origin_admission ... ok
+test r11_logout_is_idempotent_and_clears ... FAILED
+test r02_password_change_and_reset ... FAILED
+test r13_provenance_and_no_private_values_in_logs ... FAILED
+test r06_csrf_admission ... ok
+test r10_login_refusals_are_one_refusal_and_success_sets_cookies ... ok
+test r06_csrf_binding_between_anonymous_and_session_contexts ... FAILED
+test r07_session_admission_and_duplicate_cookie ... ok
+test r02_r09_bodies_and_accepted_responses ... ok
+
+failures:
+
+---- r11_logout_is_idempotent_and_clears stdout ----
+
+thread 'r11_logout_is_idempotent_and_clears' panicked at tests/identity_transport_spec.rs:1332:5:
+assertion `left == right` failed: {"code":"identity.csrf_rejected","correlation_id":"01a096cf-3e24-717f-8c08-e7a515a16198","detail":"csrf check failed","kind":"forbidden","request_id":"01a096cf-3e24-717f-8c08-e7a515a16198","status":403,"title":"Forbidden","type":"urn:n2f:problem:forbidden"}
+  left: 403
+ right: 204
+
+---- r02_password_change_and_reset stdout ----
+
+thread 'r02_password_change_and_reset' panicked at tests/identity_transport_spec.rs:1384:5:
+assertion `left == right` failed
+  left: (403, "identity.csrf_rejected")
+ right: (401, "identity.credentials_rejected")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- r13_provenance_and_no_private_values_in_logs stdout ----
+
+thread 'r13_provenance_and_no_private_values_in_logs' panicked at tests/identity_transport_spec.rs:1513:5:
+assertion `left == right` failed
+  left: 403
+ right: 204
+
+---- r06_csrf_binding_between_anonymous_and_session_contexts stdout ----
+
+thread 'r06_csrf_binding_between_anonymous_and_session_contexts' panicked at tests/identity_transport_spec.rs:1030:5:
+assertion `left == right` failed: {"code":"identity.csrf_rejected","correlation_id":"01a096cf-3e27-763d-81dd-9ee64e84a45b","detail":"csrf check failed","kind":"forbidden","request_id":"01a096cf-3e27-763d-81dd-9ee64e84a45b","status":403,"title":"Forbidden","type":"urn:n2f:problem:forbidden"}
+  left: 403
+ right: 204
+
+
+failures:
+    r02_password_change_and_reset
+    r06_csrf_binding_between_anonymous_and_session_contexts
+    r11_logout_is_idempotent_and_clears
+    r13_provenance_and_no_private_values_in_logs
+
+test result: FAILED. 8 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `--test identity_transport_spec`

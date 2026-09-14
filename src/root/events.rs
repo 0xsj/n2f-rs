@@ -7,7 +7,7 @@ use crate::shared::{
     events::{
         Envelope, Publisher,
         jetstream::{Broker, Config as BrokerConfig},
-        postgres::{Mailbox, Store, enqueue, migration},
+        postgres::{Mailbox, Store, enqueue, migration, receipts_migration},
     },
     id::V7,
     logger,
@@ -66,7 +66,8 @@ pub fn run(lookup: impl Fn(&str) -> Option<String>) -> i32 {
             if let Some(b) = &broker {
                 b.provision().await?;
             }
-            db.migrate(vec![migration(1)]).await?;
+            db.migrate(vec![migration(1), receipts_migration(3)])
+                .await?;
             let event_id = ids.new_id()?;
             let factory_clock = clock.clone();
             let mut factory = p::Factory::new(move || factory_clock.now(), move || ids.new_id());
@@ -135,7 +136,7 @@ pub fn run(lookup: impl Fn(&str) -> Option<String>) -> i32 {
                 }
                 let mark = seen.clone();
                 let consumed = mailbox
-                    .consume(move |_, received| {
+                    .consume("events-example", move |_, received| {
                         Box::pin(async move {
                             mark.store(
                                 received.id() == event_id,

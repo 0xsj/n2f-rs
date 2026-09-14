@@ -12,8 +12,10 @@
 pub mod errors;
 
 pub mod clock;
+pub mod entropy;
 pub mod env;
 pub mod id;
+pub mod keyed;
 pub mod logger;
 pub mod provenance;
 pub mod secret;

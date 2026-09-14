@@ -1,0 +1,62 @@
+{
+  "language": "rs",
+  "caught": 6,
+  "selected": 6,
+  "exhaustive": false,
+  "evidence": ".",
+  "cases": [
+    {
+      "name": "expiry_equality",
+      "file": "session.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "cb4147b1d610c3d6a144b8f83c83d607eb2d741a9bc7bc972fe384a83fb594b0"
+    },
+    {
+      "name": "purpose_confusion",
+      "file": "challenge.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "935d4687b4cca427b8ea60302fa47c63e1dc1a2ee094e0e95d8cb16c1919e772"
+    },
+    {
+      "name": "replay",
+      "file": "challenge.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "935d4687b4cca427b8ea60302fa47c63e1dc1a2ee094e0e95d8cb16c1919e772"
+    },
+    {
+      "name": "stale_version",
+      "file": "challenge.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "935d4687b4cca427b8ea60302fa47c63e1dc1a2ee094e0e95d8cb16c1919e772"
+    },
+    {
+      "name": "revocation_check",
+      "file": "session.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "cb4147b1d610c3d6a144b8f83c83d607eb2d741a9bc7bc972fe384a83fb594b0"
+    },
+    {
+      "name": "secret_disclosure",
+      "file": "email.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "439f24210a4acc104c08d21de1f7e76c8f8c160e7a1d661817856996cecde275"
+    }
+  ],
+  "logs": [
+    "auth_baseline.log",
+    "auth_expiry_equality.log",
+    "auth_purpose_confusion.log",
+    "auth_replay.log",
+    "auth_restored.log",
+    "auth_revocation_check.log",
+    "auth_secret_disclosure.log",
+    "auth_stale_version.log"
+  ],
+  "verified_on": "2026-09-12"
+}

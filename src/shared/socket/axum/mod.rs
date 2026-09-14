@@ -9,6 +9,7 @@ use ::axum::{
 };
 use futures_util::future::BoxFuture;
 use std::{
+    any::Any,
     sync::{
         Arc,
         atomic::{AtomicBool, Ordering},
@@ -20,9 +21,16 @@ pub struct Session {
         Arc<dyn Fn(Envelope) -> BoxFuture<'static, Result<Envelope, Failure>> + Send + Sync>,
     pub close: Box<dyn FnOnce() + Send>,
 }
+pub type Admission = Arc<dyn Any + Send + Sync>;
+pub type Authorize =
+    Arc<dyn Fn(HeaderMap) -> BoxFuture<'static, Result<Admission, Failure>> + Send + Sync>;
+pub type Revalidate =
+    Arc<dyn Fn(Admission) -> BoxFuture<'static, Result<(), Failure>> + Send + Sync>;
 pub struct Server {
     origin: String,
-    open: Arc<dyn Fn() -> Result<Session, Failure> + Send + Sync>,
+    open: Arc<dyn Fn(Option<Admission>) -> Result<Session, Failure> + Send + Sync>,
+    authorize: Option<Authorize>,
+    revalidate: Option<Revalidate>,
     closed: AtomicBool,
     slots: Arc<tokio::sync::Semaphore>,
     stop: tokio::sync::watch::Sender<bool>,
@@ -32,9 +40,26 @@ impl Server {
         origin: String,
         open: Arc<dyn Fn() -> Result<Session, Failure> + Send + Sync>,
     ) -> Self {
+        Self::new_with_admission(origin, None, Arc::new(move |_| open()))
+    }
+    pub fn new_with_admission(
+        origin: String,
+        authorize: Option<Authorize>,
+        open: Arc<dyn Fn(Option<Admission>) -> Result<Session, Failure> + Send + Sync>,
+    ) -> Self {
+        Self::new_with_revalidation(origin, authorize, None, open)
+    }
+    pub fn new_with_revalidation(
+        origin: String,
+        authorize: Option<Authorize>,
+        revalidate: Option<Revalidate>,
+        open: Arc<dyn Fn(Option<Admission>) -> Result<Session, Failure> + Send + Sync>,
+    ) -> Self {
         Self {
             origin,
             open,
+            authorize,
+            revalidate,
             closed: AtomicBool::new(false),
             slots: Arc::new(tokio::sync::Semaphore::new(64)),
             stop: tokio::sync::watch::channel(false).0,
@@ -59,6 +84,14 @@ impl Server {
         if server.closed.load(Ordering::SeqCst) {
             return StatusCode::SERVICE_UNAVAILABLE.into_response();
         }
+        let admitted = if let Some(authorize) = &server.authorize {
+            match authorize(headers.clone()).await {
+                Ok(admitted) => Some(admitted),
+                Err(_) => return StatusCode::UNAUTHORIZED.into_response(),
+            }
+        } else {
+            None
+        };
         let Ok(permit) = server.slots.clone().try_acquire_owned() else {
             return StatusCode::SERVICE_UNAVAILABLE.into_response();
         };
@@ -67,12 +100,21 @@ impl Server {
             .max_frame_size(65536)
             .on_upgrade(move |socket| async move {
                 let _permit = permit;
-                server.run(socket).await
+                server.run(socket, admitted).await
             })
             .into_response()
     }
-    async fn run(&self, mut socket: WebSocket) {
-        let Ok(session) = (self.open)() else {
+    async fn admission_valid(&self, admitted: &Option<Admission>) -> bool {
+        let (Some(revalidate), Some(value)) = (&self.revalidate, admitted) else {
+            return true;
+        };
+        matches!(
+            tokio::time::timeout(Duration::from_secs(1), (revalidate)(value.clone())).await,
+            Ok(Ok(()))
+        )
+    }
+    async fn run(&self, mut socket: WebSocket, admitted: Option<Admission>) {
+        let Ok(session) = (self.open)(admitted.clone()) else {
             close(&mut socket, 1011).await;
             return;
         };
@@ -88,12 +130,18 @@ impl Server {
         loop {
             tokio::select! {
                    _=stop.changed()=>{close(&mut socket,1001).await;break;},
-                   _=heartbeat.tick()=>{if !pong{break;}pong=false;if !matches!(tokio::time::timeout(Duration::from_secs(1),socket.send(Message::Ping(vec![].into()))).await,Ok(Ok(()))){break;}},
+                   _=heartbeat.tick()=>{
+                       if !pong{break;}
+                       if !self.admission_valid(&admitted).await {close(&mut socket,1008).await;break;}
+                       pong=false;
+                       if !matches!(tokio::time::timeout(Duration::from_secs(1),socket.send(Message::Ping(vec![].into()))).await,Ok(Ok(()))){break;}
+                   },
                    incoming=socket.recv()=>{
                     match incoming{
                      Some(Ok(Message::Pong(_)))=>pong=true,
                      Some(Ok(Message::Ping(_)))=>{},
                      Some(Ok(Message::Text(raw)))=>{
+                      if !self.admission_valid(&admitted).await {close(&mut socket,1008).await;break;}
                       let Ok(message)=decode(raw.as_bytes())else{close(&mut socket,1008).await;break;};
                       let response=tokio::select!{_=stop.changed()=>{close(&mut socket,1001).await;break;},r=tokio::time::timeout(Duration::from_secs(1),(session.handle)(message))=>r};
                       let Ok(Ok(response))=response else{close(&mut socket,1011).await;break;};let Ok(body)=encode(response)else{close(&mut socket,1011).await;break;};

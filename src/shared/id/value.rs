@@ -43,6 +43,9 @@ impl Id {
     pub fn version(self) -> u8 {
         self.0[6] >> 4
     }
+    pub fn is_zero(self) -> bool {
+        self.0 == [0; 16]
+    }
     pub fn unix_millis(self) -> Option<u64> {
         if self.version() != 7 {
             return None;

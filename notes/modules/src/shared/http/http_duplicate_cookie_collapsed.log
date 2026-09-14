@@ -1,0 +1,37 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-http-mutations-h13kfgws/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.49s
+     Running tests/http_feature_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/http_feature_spec-2f81e7eaee2da519)
+
+running 6 tests
+test h16_response_allowlist_and_host_cookie_refusals ... ok
+test h15_cookie_parsing_keeps_duplicates_and_refuses_malformed ... FAILED
+test h15_method_matching_and_allow_set ... ok
+test h17_admission_runs_before_open ... ok
+test h15_h16_post_body_head_and_set_cookie_over_the_wire ... FAILED
+test h17_h18_admission_before_open_once_with_attribution_and_refusal ... ok
+
+failures:
+
+---- h15_cookie_parsing_keeps_duplicates_and_refuses_malformed stdout ----
+
+thread 'h15_cookie_parsing_keeps_duplicates_and_refuses_malformed' panicked at tests/http_feature_spec.rs:76:5:
+assertion `left == right` failed
+  left: ["3"]
+ right: ["1", "3"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- h15_h16_post_body_head_and_set_cookie_over_the_wire stdout ----
+
+thread 'h15_h16_post_body_head_and_set_cookie_over_the_wire' panicked at tests/http_feature_spec.rs:335:5:
+assertion `left == right` failed
+  left: Array [String("3")]
+ right: Array [String("1"), String("3")]
+
+
+failures:
+    h15_cookie_parsing_keeps_duplicates_and_refuses_malformed
+    h15_h16_post_body_head_and_set_cookie_over_the_wire
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test http_feature_spec`

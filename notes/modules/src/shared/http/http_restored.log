@@ -1,0 +1,23 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-http-mutations-h13kfgws/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.68s
+     Running tests/http_feature_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/http_feature_spec-2f81e7eaee2da519)
+
+running 6 tests
+test h15_cookie_parsing_keeps_duplicates_and_refuses_malformed ... ok
+test h16_response_allowlist_and_host_cookie_refusals ... ok
+test h15_method_matching_and_allow_set ... ok
+test h17_admission_runs_before_open ... ok
+test h17_h18_admission_before_open_once_with_attribution_and_refusal ... ok
+test h15_h16_post_body_head_and_set_cookie_over_the_wire ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/keyed_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/keyed_spec-e019d4dd3840ca3d)
+
+running 3 tests
+test k01_short_or_missing_key_refused_and_key_redacted ... ok
+test k02_purpose_binds_and_text_keys_are_utf8_bytes ... ok
+test k05_vectors_sign_and_verify ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,70 @@
+{
+  "language": "rs",
+  "caught": 7,
+  "selected": 7,
+  "exhaustive": false,
+  "evidence": ".",
+  "cases": [
+    {
+      "name": "allowlist_memory",
+      "file": "password_hash/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "b6a6d0ca6595336cde65f39174b9dd8dd1d4507842ff71613f27fe4e675e0ae3"
+    },
+    {
+      "name": "mismatch_as_corrupt",
+      "file": "password_hash/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "b6a6d0ca6595336cde65f39174b9dd8dd1d4507842ff71613f27fe4e675e0ae3"
+    },
+    {
+      "name": "dummy_leaks",
+      "file": "password_hash/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "b6a6d0ca6595336cde65f39174b9dd8dd1d4507842ff71613f27fe4e675e0ae3"
+    },
+    {
+      "name": "saturation_ignored",
+      "file": "password_hash/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "b6a6d0ca6595336cde65f39174b9dd8dd1d4507842ff71613f27fe4e675e0ae3"
+    },
+    {
+      "name": "digest_purpose_binding",
+      "file": "token_codec/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "3956e5063676925373f478c724d07e558be8cc516484fe443062789f91f649ae"
+    },
+    {
+      "name": "noncanonical_accept",
+      "file": "token_codec/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "3956e5063676925373f478c724d07e558be8cc516484fe443062789f91f649ae"
+    },
+    {
+      "name": "entropy_fallback",
+      "file": "token_codec/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "3956e5063676925373f478c724d07e558be8cc516484fe443062789f91f649ae"
+    }
+  ],
+  "logs": [
+    "adapters_allowlist_memory.log",
+    "adapters_baseline.log",
+    "adapters_digest_purpose_binding.log",
+    "adapters_dummy_leaks.log",
+    "adapters_entropy_fallback.log",
+    "adapters_mismatch_as_corrupt.log",
+    "adapters_noncanonical_accept.log",
+    "adapters_restored.log",
+    "adapters_saturation_ignored.log"
+  ],
+  "verified_on": "2026-09-12"
+}

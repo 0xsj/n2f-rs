@@ -1,0 +1,82 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-mail-mutations-i8eqsvjc/work)
+warning: unused variable: `expires_at_ms`
+   --> src/domains/identity/infra/smtp/mod.rs:211:9
+    |
+211 |         expires_at_ms: i64,
+    |         ^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_expires_at_ms`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: function `iso8601` is never used
+   --> src/domains/identity/infra/smtp/mod.rs:108:4
+    |
+108 | fn iso8601(ms: i64) -> String {
+    |    ^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` on by default
+
+warning: `n2f-rs` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.99s
+     Running tests/identity_app_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_app_spec-4ae3bfe9bcd0c09b)
+
+running 14 tests
+test u02_config_validates_once ... ok
+test u05_u12_inactive_principal_receives_no_challenge_or_mail ... ok
+test u09_logout_is_idempotent ... ok
+test u10_logout_all_increments_the_epoch_with_a_guard ... ok
+test u12_request_reset_mails_even_unverified_credentials ... ok
+test u07_login_issues_a_fresh_session_only_for_verified_active_matches ... ok
+test u04_duplicate_is_accepted_without_replacement_or_mail ... ok
+test u05_request_verification_outcomes ... ok
+test u11_change_password_verifies_proof_then_replaces_with_guards ... ok
+test u08_authenticate_resolves_through_storage ... ok
+test u13_reset_password_consumes_and_replaces_without_a_session ... ok
+test u04_register_hashes_before_store_and_mails_after_commit ... ok
+test u06_verify_email_requires_password_proof_and_consumes_once ... ok
+test u04_register_refusals_and_failures_keep_their_meaning ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/identity_smtp_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_smtp_spec-fc13483fc50165d2)
+
+running 6 tests
+test m10_configuration_refusals ... ok
+test m12_refused_connection_is_not_delivered ... ok
+test m12_rejection_is_not_delivered ... ok
+test m11_m12_m13_verification_message_is_delivered ... FAILED
+test m11_reset_message_uses_the_reset_link_and_subject ... FAILED
+test m12_stall_is_bounded_by_the_timeout ... ok
+
+failures:
+
+---- m11_m12_m13_verification_message_is_delivered stdout ----
+
+thread 'm11_m12_m13_verification_message_is_delivered' panicked at tests/identity_smtp_spec.rs:264:5:
+Confirm the email address for your n2f account by opening this link:
+
+http://127.0.0.1:3000/verify-email#token=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8
+
+If you did not create an account, ignore this message.
+
+
+
+---- m11_reset_message_uses_the_reset_link_and_subject stdout ----
+
+thread 'm11_reset_message_uses_the_reset_link_and_subject' panicked at tests/identity_smtp_spec.rs:289:5:
+Reset the password for your n2f account by opening this link:
+
+http://127.0.0.1:3000/reset-password#token=AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8
+
+If you did not ask to reset your password, ignore this message.
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    m11_m12_m13_verification_message_is_delivered
+    m11_reset_message_uses_the_reset_link_and_subject
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+error: test failed, to rerun pass `--test identity_smtp_spec`

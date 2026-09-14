@@ -11,6 +11,7 @@ base64 = "=0.22.1"
 sqlx = { version = "=0.8.6", default-features = false, features = ["runtime-tokio", "tls-rustls-ring-webpki", "postgres"] }
 sha2 = "=0.10.9"
 serde = { version = "=1.0.228", features = ["derive"] }
+unicode-normalization = "=0.1.25"
 tungstenite = { version = "=0.28.0", default-features = false }
 reqwest = { version = "=0.12.28", default-features = false, features = ["rustls-tls-webpki-roots", "stream"] }
 getrandom = "0.4.1"
@@ -29,3 +30,7 @@ url = "=2.5.8"
 hyper = { version = "=1.11.1", features = ["server", "http1"] }
 hyper-util = { version = "=0.1.20", features = ["tokio", "service"] }
 async-nats = "=0.39.0"
+argon2 = { version = "=0.6.0", default-features = false, features = ["alloc"] }
+subtle = "=2.6.1"
+hmac = "=0.12.1"
+lettre = { version = "=0.11.23", default-features = false, features = ["builder", "smtp-transport", "hostname", "tokio1", "tokio1-rustls", "ring", "webpki-roots"] }

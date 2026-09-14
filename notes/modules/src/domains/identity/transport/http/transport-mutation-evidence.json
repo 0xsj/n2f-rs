@@ -1,0 +1,86 @@
+{
+  "language": "rs",
+  "caught": 9,
+  "selected": 9,
+  "exhaustive": false,
+  "evidence": ".",
+  "cases": [
+    {
+      "name": "origin_check_skipped",
+      "file": "src/domains/identity/transport/http/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "733c9b13d4ac6def17a0bd3b78a9eed5f59860a30a3f3722f86573489d10ef15"
+    },
+    {
+      "name": "csrf_binding_ignored",
+      "file": "src/domains/identity/transport/http/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "733c9b13d4ac6def17a0bd3b78a9eed5f59860a30a3f3722f86573489d10ef15"
+    },
+    {
+      "name": "csrf_lifetime_unchecked",
+      "file": "src/domains/identity/transport/http/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "733c9b13d4ac6def17a0bd3b78a9eed5f59860a30a3f3722f86573489d10ef15"
+    },
+    {
+      "name": "duplicate_session_cookie_tolerated",
+      "file": "src/domains/identity/transport/http/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "733c9b13d4ac6def17a0bd3b78a9eed5f59860a30a3f3722f86573489d10ef15"
+    },
+    {
+      "name": "login_returns_token",
+      "file": "src/domains/identity/transport/http/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "733c9b13d4ac6def17a0bd3b78a9eed5f59860a30a3f3722f86573489d10ef15"
+    },
+    {
+      "name": "refusal_reveals_field",
+      "file": "src/domains/identity/transport/http/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "733c9b13d4ac6def17a0bd3b78a9eed5f59860a30a3f3722f86573489d10ef15"
+    },
+    {
+      "name": "source_bucket_ignored",
+      "file": "src/domains/identity/infra/local/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "f4890a8781c65842761f62d3065a8e0b8c4c664d0210cc019a7b287715719cbb"
+    },
+    {
+      "name": "fail_open_when_full",
+      "file": "src/domains/identity/infra/local/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "f4890a8781c65842761f62d3065a8e0b8c4c664d0210cc019a7b287715719cbb"
+    },
+    {
+      "name": "blocklist_substring_match",
+      "file": "src/domains/identity/infra/local/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "f4890a8781c65842761f62d3065a8e0b8c4c664d0210cc019a7b287715719cbb"
+    }
+  ],
+  "logs": [
+    "transport_baseline.log",
+    "transport_blocklist_substring_match.log",
+    "transport_csrf_binding_ignored.log",
+    "transport_csrf_lifetime_unchecked.log",
+    "transport_duplicate_session_cookie_tolerated.log",
+    "transport_fail_open_when_full.log",
+    "transport_login_returns_token.log",
+    "transport_origin_check_skipped.log",
+    "transport_refusal_reveals_field.log",
+    "transport_restored.log",
+    "transport_source_bucket_ignored.log"
+  ],
+  "verified_on": "2026-09-12"
+}

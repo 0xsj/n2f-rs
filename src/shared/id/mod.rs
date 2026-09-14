@@ -8,6 +8,7 @@
 mod sequence;
 mod v7;
 mod value;
+pub use crate::shared::entropy::{Entropy, EntropyError, OsEntropy};
 pub use sequence::Sequence;
-pub use v7::{Entropy, EntropyError, OsEntropy, V7};
+pub use v7::V7;
 pub use value::Id;

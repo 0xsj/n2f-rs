@@ -1,32 +1,7 @@
 use super::Id;
+use crate::shared::entropy::{Entropy, OsEntropy};
 use crate::shared::errors::{Failure, Kind};
-use std::{
-    error::Error,
-    time::{SystemTime, UNIX_EPOCH},
-};
-
-/// Diagnostic source owned at the entropy boundary; no library-specific type leaks.
-pub type EntropyError = Box<dyn Error + Send + Sync + 'static>;
-/// Implementations fill the entire buffer or return an error. Never use test
-/// entropy in production. A closure can implement this capability directly.
-pub trait Entropy {
-    fn fill(&mut self, bytes: &mut [u8]) -> Result<(), EntropyError>;
-}
-impl<F> Entropy for F
-where
-    F: FnMut(&mut [u8]) -> Result<(), EntropyError>,
-{
-    fn fill(&mut self, bytes: &mut [u8]) -> Result<(), EntropyError> {
-        self(bytes)
-    }
-}
-/// The only owner of the OS randomness dependency.
-pub struct OsEntropy;
-impl Entropy for OsEntropy {
-    fn fill(&mut self, bytes: &mut [u8]) -> Result<(), EntropyError> {
-        getrandom::fill(bytes).map_err(|e| Box::new(e) as EntropyError)
-    }
-}
+use std::time::{SystemTime, UNIX_EPOCH};
 
 /// One generator's ordering state. Exclusive mutable access prevents racing
 /// transitions; sharing/synchronization belongs to its caller. Not Clone.

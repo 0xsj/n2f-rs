@@ -1,0 +1,47 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-transport-mutations-tszjp_i7/work)
+warning: unused variable: `source_key`
+   --> src/domains/identity/infra/local/mod.rs:181:13
+    |
+181 |         let source_key = source_bucket
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_source_key`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: `n2f-rs` (lib) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.79s
+     Running tests/identity_local_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_local_spec-32267c9fa7a4476b)
+
+running 7 tests
+test l02_invalid_limits_refused ... ok
+test l03_bounded_store_evicts_expired_and_refuses_when_full ... ok
+test b01_matches_are_exact_after_nfc_and_case_folding ... ok
+test m01_undelivered_mail_reports_not_delivered_and_retains_nothing ... ok
+test l01_state_holds_only_keyed_digests ... FAILED
+test b02_missing_or_empty_list_is_configuration_failure ... ok
+test l01_l02_buckets_are_independent_and_refuse_with_retry_after ... FAILED
+
+failures:
+
+---- l01_state_holds_only_keyed_digests stdout ----
+
+thread 'l01_state_holds_only_keyed_digests' panicked at tests/identity_local_spec.rs:132:5:
+assertion `left == right` failed
+  left: 1
+ right: 2
+
+---- l01_l02_buckets_are_independent_and_refuse_with_retry_after stdout ----
+
+thread 'l01_l02_buckets_are_independent_and_refuse_with_retry_after' panicked at tests/identity_local_spec.rs:85:5:
+assertion failed: matches!(l.admit("login", &secret("bob@example.com"),
+    "10.0.0.1").await.unwrap(), Admission::Refused { retry_after_ms } if
+    retry_after_ms == 600_000 - 15_000)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    l01_l02_buckets_are_independent_and_refuse_with_retry_after
+    l01_state_holds_only_keyed_digests
+
+test result: FAILED. 5 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test identity_local_spec`

@@ -1,0 +1,55 @@
+   Compiling rustls v0.23.37
+   Compiling idna v1.1.0
+   Compiling base64 v0.23.1
+   Compiling hostname v0.4.2
+   Compiling nom v8.0.0
+   Compiling quoted_printable v0.5.2
+   Compiling email_address v0.2.9
+   Compiling fastrand v2.5.0
+   Compiling email-encoding v0.4.2
+   Compiling url v2.5.8
+   Compiling tower-http v0.6.11
+   Compiling tokio-rustls v0.26.4
+   Compiling sqlx-core v0.8.6
+   Compiling hyper-rustls v0.27.7
+   Compiling lettre v0.11.23
+   Compiling async-nats v0.39.0
+   Compiling reqwest v0.12.28
+   Compiling opentelemetry-http v0.31.0
+   Compiling sqlx-postgres v0.8.6
+   Compiling opentelemetry-otlp v0.31.0
+   Compiling sqlx v0.8.6
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-mail-mutations-i8eqsvjc/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.84s
+     Running tests/identity_app_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_app_spec-4ae3bfe9bcd0c09b)
+
+running 14 tests
+test u02_config_validates_once ... ok
+test u05_u12_inactive_principal_receives_no_challenge_or_mail ... ok
+test u12_request_reset_mails_even_unverified_credentials ... ok
+test u08_authenticate_resolves_through_storage ... ok
+test u05_request_verification_outcomes ... ok
+test u10_logout_all_increments_the_epoch_with_a_guard ... ok
+test u04_duplicate_is_accepted_without_replacement_or_mail ... ok
+test u04_register_hashes_before_store_and_mails_after_commit ... ok
+test u04_register_refusals_and_failures_keep_their_meaning ... ok
+test u09_logout_is_idempotent ... ok
+test u11_change_password_verifies_proof_then_replaces_with_guards ... ok
+test u07_login_issues_a_fresh_session_only_for_verified_active_matches ... ok
+test u06_verify_email_requires_password_proof_and_consumes_once ... ok
+test u13_reset_password_consumes_and_replaces_without_a_session ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/identity_smtp_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_smtp_spec-fc13483fc50165d2)
+
+running 6 tests
+test m10_configuration_refusals ... ok
+test m12_refused_connection_is_not_delivered ... ok
+test m12_rejection_is_not_delivered ... ok
+test m11_reset_message_uses_the_reset_link_and_subject ... ok
+test m11_m12_m13_verification_message_is_delivered ... ok
+test m12_stall_is_bounded_by_the_timeout ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+

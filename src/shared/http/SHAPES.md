@@ -12,6 +12,11 @@ same facts and scenarios apply in all three clones.
 | Completion | Facts plus monotonic elapsed duration, optional registered route/operation and available safe scope/error projections |
 | Active | Optional validated TraceRef, one terminal finish; no business return value |
 | Observer | Start an Active observation under the native request execution context |
+| Request (feature) | Normalized method, registered template, raw query, bounded body bytes, selected header lists, cookies name → values with duplicates kept, trusted source key, optional admitted value |
+| Response (feature) | Status in {200, 201, 202, 204, 303}; optional JSON body (none for 204); allowlisted headers Cache-Control, Allow, WWW-Authenticate, Retry-After, Location; Set-Cookie list |
+| Cookie | Name token, cookie-octet value, Path, Max-Age, Expires, Secure, HttpOnly, SameSite; `__Host-` requires Secure and Path=/ |
+| Admission | Anonymous, Authenticated (initiator actor, optional tenant, admitted value) or Refused (failure plus allowlisted headers and Set-Cookie list) |
+| Refusal | Classified failure plus allowlisted headers and Set-Cookie list; the failure alone selects status and problem members; returned by handlers as RequestFailure::Refused |
 
 Termination is response_completed, peer_closed, deadline, handler_error,
 write_error or abandoned. response_completed requires a final status. Other

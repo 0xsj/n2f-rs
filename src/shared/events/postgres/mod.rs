@@ -14,6 +14,12 @@ pub fn migration(version: i64) -> Migration {
         sql: include_str!("migrations/0001_events.sql").into(),
     }
 }
+pub fn receipts_migration(version: i64) -> Migration {
+    Migration {
+        version,
+        sql: include_str!("migrations/0003_mailbox_receipts.sql").into(),
+    }
+}
 pub struct Store {
     pub database: Arc<Database>,
 }
@@ -104,14 +110,26 @@ impl Store {
 impl Mailbox {
     pub async fn consume(
         &self,
+        consumer: &str,
         f: impl for<'c> FnOnce(&'c mut PgConnection, Envelope) -> BoxFuture<'c, Result<(), Failure>>
         + Send
         + 'static,
     ) -> Result<bool, Failure> {
+        if consumer.is_empty()
+            || consumer.len() > 64
+            || !consumer
+                .bytes()
+                .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b"_.-".contains(&b))
+        {
+            return Err(Failure::new(Kind::Invalid, "invalid event consumer")
+                .with_type("events.invalid_consumer"));
+        }
+        let consumer = consumer.to_owned();
         let (found,rejected)=self.database.transaction(move|tx|Box::pin(async move{
-   let row=sqlx::query("SELECT envelope::text AS envelope,attempts FROM public.n2f_mailbox WHERE state='pending' AND attempts<5 AND available_at<=clock_timestamp() ORDER BY available_at,event_id FOR UPDATE SKIP LOCKED LIMIT 1").fetch_optional(&mut *tx).await.map_err(map)?;let Some(row)=row else{return Ok((false,None));};let event=Envelope::decode(row.get::<String,_>("envelope").as_bytes())?;let id=event.id().to_string();let attempt:i32=row.get("attempts");
+   sqlx::query("INSERT INTO public.n2f_mailbox_receipts(event_id,consumer) SELECT event_id,$1 FROM public.n2f_mailbox ON CONFLICT(event_id,consumer) DO NOTHING").bind(&consumer).execute(&mut *tx).await.map_err(map)?;
+   let row=sqlx::query("SELECT m.envelope::text AS envelope,r.attempts FROM public.n2f_mailbox m JOIN public.n2f_mailbox_receipts r ON r.event_id=m.event_id WHERE r.consumer=$1 AND r.state='pending' AND r.attempts<5 AND r.available_at<=clock_timestamp() ORDER BY r.available_at,m.event_id FOR UPDATE OF m,r SKIP LOCKED LIMIT 1").bind(&consumer).fetch_optional(&mut *tx).await.map_err(map)?;let Some(row)=row else{return Ok((false,None));};let event=Envelope::decode(row.get::<String,_>("envelope").as_bytes())?;let id=event.id().to_string();let attempt:i32=row.get("attempts");
    let mut sub=tx.begin().await.map_err(map)?;let rejected=f(&mut sub,event).await.err();if rejected.is_some(){sub.rollback().await.map_err(map)?;}else{sub.commit().await.map_err(map)?;}
-   let state=if rejected.is_none(){"processed"}else if attempt+1>=5{"dead"}else{"pending"};sqlx::query("UPDATE public.n2f_mailbox SET state=$2,attempts=attempts+1,available_at=clock_timestamp()+interval '100 milliseconds' WHERE event_id=$1::uuid").bind(id).bind(state).execute(tx).await.map_err(map)?;Ok((true,rejected))
+   let state=if rejected.is_none(){"processed"}else if attempt+1>=5{"dead"}else{"pending"};sqlx::query("UPDATE public.n2f_mailbox_receipts SET state=$3,attempts=attempts+1,available_at=clock_timestamp()+interval '100 milliseconds' WHERE event_id=$1::uuid AND consumer=$2").bind(id).bind(&consumer).bind(state).execute(&mut *tx).await.map_err(map)?;Ok((true,rejected))
   })).await?;
         match rejected {
             Some(e) => Err(e),

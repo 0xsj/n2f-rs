@@ -1,0 +1,48 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-http-mutations-h13kfgws/work)
+warning: variable `attribution` is assigned to, but never used
+   --> src/shared/http/axum/mod.rs:622:17
+    |
+622 |         let mut attribution = None;
+    |                 ^^^^^^^^^^^
+    |
+    = note: consider using `_attribution` instead
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: value assigned to `attribution` is never read
+   --> src/shared/http/axum/mod.rs:639:29
+    |
+639 | ...                   attribution = Some(a);
+    |                       ^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` on by default
+
+warning: `n2f-rs` (lib) generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.15s
+     Running tests/http_feature_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/http_feature_spec-2f81e7eaee2da519)
+
+running 6 tests
+test h16_response_allowlist_and_host_cookie_refusals ... ok
+test h15_cookie_parsing_keeps_duplicates_and_refuses_malformed ... ok
+test h15_method_matching_and_allow_set ... ok
+test h17_admission_runs_before_open ... ok
+test h17_h18_admission_before_open_once_with_attribution_and_refusal ... FAILED
+test h15_h16_post_body_head_and_set_cookie_over_the_wire ... ok
+
+failures:
+
+---- h17_h18_admission_before_open_once_with_attribution_and_refusal stdout ----
+
+thread 'h17_h18_admission_before_open_once_with_attribution_and_refusal' panicked at tests/http_feature_spec.rs:431:5:
+assertion `left == right` failed
+  left: String("Anonymous:")
+ right: "User:user-1"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    h17_h18_admission_before_open_once_with_attribution_and_refusal
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test http_feature_spec`

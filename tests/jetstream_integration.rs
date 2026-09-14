@@ -4,7 +4,7 @@ use n2f_rs::shared::{
     events::{
         Envelope, Publisher, Receipt,
         jetstream::{Broker, Config as BrokerConfig},
-        postgres::{Mailbox, Store, enqueue, migration},
+        postgres::{Mailbox, Store, enqueue, migration, receipts_migration},
     },
     id::Id,
     postgres::{Config, Database, Migration, map},
@@ -47,6 +47,7 @@ async fn jetstream_seam() {
                 version: 2,
                 sql: "CREATE TABLE jetstream_effect(id uuid PRIMARY KEY)".into(),
             },
+            receipts_migration(3),
         ])
         .await
         .unwrap();
@@ -133,7 +134,7 @@ async fn jetstream_seam() {
     let count = calls.clone();
     assert!(
         mailbox
-            .consume(move |tx, e| Box::pin(async move {
+            .consume("jetstream", move |tx, e| Box::pin(async move {
                 count.fetch_add(1, Ordering::SeqCst);
                 sqlx::query("INSERT INTO jetstream_effect VALUES($1::uuid)")
                     .bind(e.id().to_string())
@@ -148,7 +149,9 @@ async fn jetstream_seam() {
     mailbox.publish(&event).await.unwrap();
     assert!(
         !mailbox
-            .consume(|_, _| Box::pin(async { panic!("duplicate effects") }))
+            .consume("jetstream", |_, _| Box::pin(async {
+                panic!("duplicate effects")
+            }))
             .await
             .unwrap()
     );
@@ -175,7 +178,7 @@ async fn jetstream_seam() {
     assert!(broker.transfer(&mailbox).await.unwrap());
     assert!(
         mailbox
-            .consume(|_, _| Box::pin(async { Ok(()) }))
+            .consume("jetstream", |_, _| Box::pin(async { Ok(()) }))
             .await
             .unwrap()
     );

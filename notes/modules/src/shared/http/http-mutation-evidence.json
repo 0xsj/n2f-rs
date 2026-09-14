@@ -1,0 +1,70 @@
+{
+  "language": "rs",
+  "caught": 7,
+  "selected": 7,
+  "exhaustive": false,
+  "evidence": ".",
+  "cases": [
+    {
+      "name": "allow_omitted",
+      "file": "src/shared/http/axum/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "450665e65f95e149e771b0cc31f6ff612b2a15188252a68103879b966bc72f04"
+    },
+    {
+      "name": "duplicate_cookie_collapsed",
+      "file": "src/shared/http/axum/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "450665e65f95e149e771b0cc31f6ff612b2a15188252a68103879b966bc72f04"
+    },
+    {
+      "name": "admission_after_open",
+      "file": "src/shared/http/axum/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "450665e65f95e149e771b0cc31f6ff612b2a15188252a68103879b966bc72f04"
+    },
+    {
+      "name": "header_allowlist_bypassed",
+      "file": "src/shared/http/axum/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "450665e65f95e149e771b0cc31f6ff612b2a15188252a68103879b966bc72f04"
+    },
+    {
+      "name": "admission_twice",
+      "file": "src/shared/http/axum/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "450665e65f95e149e771b0cc31f6ff612b2a15188252a68103879b966bc72f04"
+    },
+    {
+      "name": "cookie_in_completion_log",
+      "file": "src/shared/http/axum/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "450665e65f95e149e771b0cc31f6ff612b2a15188252a68103879b966bc72f04"
+    },
+    {
+      "name": "keyed_purpose_unbound",
+      "file": "src/shared/keyed/mod.rs",
+      "caught": true,
+      "compiled": true,
+      "source_sha256": "fcd38eac0962e2334f48df9d83cecf5753f9b0230c439d9b096b1cda8c8ecd78"
+    }
+  ],
+  "logs": [
+    "http_admission_after_open.log",
+    "http_admission_twice.log",
+    "http_allow_omitted.log",
+    "http_baseline.log",
+    "http_cookie_in_completion_log.log",
+    "http_duplicate_cookie_collapsed.log",
+    "http_header_allowlist_bypassed.log",
+    "http_keyed_purpose_unbound.log",
+    "http_restored.log"
+  ],
+  "verified_on": "2026-09-12"
+}

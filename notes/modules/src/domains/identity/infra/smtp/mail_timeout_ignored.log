@@ -1,0 +1,47 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-mail-mutations-i8eqsvjc/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.14s
+     Running tests/identity_app_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_app_spec-4ae3bfe9bcd0c09b)
+
+running 14 tests
+test u02_config_validates_once ... ok
+test u05_request_verification_outcomes ... ok
+test u05_u12_inactive_principal_receives_no_challenge_or_mail ... ok
+test u08_authenticate_resolves_through_storage ... ok
+test u04_duplicate_is_accepted_without_replacement_or_mail ... ok
+test u04_register_hashes_before_store_and_mails_after_commit ... ok
+test u10_logout_all_increments_the_epoch_with_a_guard ... ok
+test u04_register_refusals_and_failures_keep_their_meaning ... ok
+test u12_request_reset_mails_even_unverified_credentials ... ok
+test u11_change_password_verifies_proof_then_replaces_with_guards ... ok
+test u09_logout_is_idempotent ... ok
+test u07_login_issues_a_fresh_session_only_for_verified_active_matches ... ok
+test u06_verify_email_requires_password_proof_and_consumes_once ... ok
+test u13_reset_password_consumes_and_replaces_without_a_session ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/identity_smtp_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_smtp_spec-fc13483fc50165d2)
+
+running 6 tests
+test m10_configuration_refusals ... ok
+test m12_refused_connection_is_not_delivered ... ok
+test m11_reset_message_uses_the_reset_link_and_subject ... ok
+test m12_rejection_is_not_delivered ... ok
+test m11_m12_m13_verification_message_is_delivered ... ok
+test m12_stall_is_bounded_by_the_timeout ... FAILED
+
+failures:
+
+---- m12_stall_is_bounded_by_the_timeout stdout ----
+
+thread 'm12_stall_is_bounded_by_the_timeout' panicked at tests/identity_smtp_spec.rs:348:5:
+30.002553875s
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    m12_stall_is_bounded_by_the_timeout
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 30.01s
+
+error: test failed, to rerun pass `--test identity_smtp_spec`

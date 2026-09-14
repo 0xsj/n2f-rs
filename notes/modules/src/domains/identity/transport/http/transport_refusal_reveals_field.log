@@ -1,0 +1,46 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-transport-mutations-tszjp_i7/work)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.71s
+     Running tests/identity_local_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_local_spec-32267c9fa7a4476b)
+
+running 7 tests
+test l02_invalid_limits_refused ... ok
+test m01_undelivered_mail_reports_not_delivered_and_retains_nothing ... ok
+test l03_bounded_store_evicts_expired_and_refuses_when_full ... ok
+test b01_matches_are_exact_after_nfc_and_case_folding ... ok
+test l01_state_holds_only_keyed_digests ... ok
+test b02_missing_or_empty_list_is_configuration_failure ... ok
+test l01_l02_buckets_are_independent_and_refuse_with_retry_after ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/identity_transport_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/identity_transport_spec-e8633b02cf2ee52f)
+
+running 12 tests
+test r01_configuration_refusals ... ok
+test r08_rate_limit_projection ... ok
+test r02_r04_csrf_issuance_and_no_store ... ok
+test r05_origin_admission ... ok
+test r10_login_refusals_are_one_refusal_and_success_sets_cookies ... FAILED
+test r13_provenance_and_no_private_values_in_logs ... ok
+test r06_csrf_admission ... ok
+test r06_csrf_binding_between_anonymous_and_session_contexts ... ok
+test r07_session_admission_and_duplicate_cookie ... ok
+test r11_logout_is_idempotent_and_clears ... ok
+test r02_r09_bodies_and_accepted_responses ... ok
+test r02_password_change_and_reset ... ok
+
+failures:
+
+---- r10_login_refusals_are_one_refusal_and_success_sets_cookies stdout ----
+
+thread 'r10_login_refusals_are_one_refusal_and_success_sets_cookies' panicked at tests/identity_transport_spec.rs:1173:9:
+{"code":"identity.credentials_rejected","correlation_id":"01a096cf-645c-72d6-b695-f28e367c2b6e","detail":"authentication refused","fields":{"password":"mismatch"},"kind":"unauthenticated","request_id":"01a096cf-645c-72d6-b695-f28e367c2b6e","status":401,"title":"Unauthorized","type":"urn:n2f:problem:unauthenticated"}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    r10_login_refusals_are_one_refusal_and_success_sets_cookies
+
+test result: FAILED. 11 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+error: test failed, to rerun pass `--test identity_transport_spec`

@@ -1,0 +1,44 @@
+   Compiling n2f-rs v0.1.0 (/private/var/folders/_t/3ghz_tk90d53wy21s4tb20h80000gn/T/n2f-auth-http-mutations-h13kfgws/work)
+warning: unused variable: `lower`
+   --> src/shared/http/axum/mod.rs:212:17
+    |
+212 |             let lower = name.to_ascii_lowercase();
+    |                 ^^^^^ help: if this is intentional, prefix it with an underscore: `_lower`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: `n2f-rs` (lib) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.10s
+     Running tests/http_feature_spec.rs (/private/tmp/n2f-identity-mutations-rs/debug/deps/http_feature_spec-2f81e7eaee2da519)
+
+running 6 tests
+test h15_cookie_parsing_keeps_duplicates_and_refuses_malformed ... ok
+test h16_response_allowlist_and_host_cookie_refusals ... FAILED
+test h15_method_matching_and_allow_set ... ok
+test h17_admission_runs_before_open ... ok
+test h17_h18_admission_before_open_once_with_attribution_and_refusal ... ok
+test h15_h16_post_body_head_and_set_cookie_over_the_wire ... FAILED
+
+failures:
+
+---- h16_response_allowlist_and_host_cookie_refusals stdout ----
+
+thread 'h16_response_allowlist_and_host_cookie_refusals' panicked at tests/http_feature_spec.rs:111:14:
+called `Result::unwrap_err()` on an `Ok` value: ()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- h15_h16_post_body_head_and_set_cookie_over_the_wire stdout ----
+
+thread 'h15_h16_post_body_head_and_set_cookie_over_the_wire' panicked at tests/http_feature_spec.rs:369:5:
+assertion `left == right` failed
+  left: 200
+ right: 500
+
+
+failures:
+    h15_h16_post_body_head_and_set_cookie_over_the_wire
+    h16_response_allowlist_and_host_cookie_refusals
+
+test result: FAILED. 4 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test http_feature_spec`
